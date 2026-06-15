@@ -84,7 +84,7 @@ export function MapPage() {
       </div>
 
       <GlassCard className="mb-4 p-3">
-        <LocationFixBar />
+        <LocationFixBar compact />
       </GlassCard>
 
       {/* Вид */}

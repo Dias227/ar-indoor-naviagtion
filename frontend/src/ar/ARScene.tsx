@@ -316,13 +316,13 @@ function ARWorld({
     }
   });
 
-  // Сброс калибровки при смене маршрута или явном сбросе
+  // Сброс калибровки только по явному запросу (кнопка ⟲), не при пересчёте маршрута
   useEffect(() => {
     calibratedRef.current = false;
     anchorRef.current = null;
     if (anchorGroupRef.current) anchorGroupRef.current.visible = false;
     onStateChange('scanning-floor');
-  }, [route, calibrationGeneration, onStateChange]);
+  }, [calibrationGeneration, onStateChange]);
 
   const ringColor = useMemo(() => new THREE.Color(routeColor), [routeColor]);
   void userFloor;

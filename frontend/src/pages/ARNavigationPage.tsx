@@ -37,6 +37,7 @@ export function ARNavigationPage() {
     (s) => s.adjustCalibrationHeading,
   );
   const resetARCalibration = useNavigationStore((s) => s.resetARCalibration);
+  const lastFix = useNavigationStore((s) => s.lastFix);
   const { voiceEnabled, showMinimap, update } = useSettingsStore();
 
   const [xrSupported, setXrSupported] = useState<boolean | null>(null);
@@ -106,8 +107,9 @@ export function ARNavigationPage() {
           <AnimatePresence mode="wait">
             {arState === 'scanning-floor' && (
               <Banner key="scan" color="text-neon">
-                Сначала «📍 Где я?» — укажите помещение. Затем наведите на пол и
-                коснитесь экрана для привязки маршрута
+                {lastFix
+                  ? 'Наведите камеру на пол и коснитесь экрана, чтобы привязать маршрут'
+                  : 'Наведите на пол и коснитесь экрана. Позицию можно уточнить кнопкой 📍 внизу'}
               </Banner>
             )}
             {arState === 'requesting' && (
@@ -138,29 +140,26 @@ export function ARNavigationPage() {
           </div>
         </div>
 
-        {/* Левый верх: где я + поворот маршрута */}
-        <div className="absolute left-3 top-24 pointer-events-auto flex flex-col gap-2">
-          <LocationFixBar compact />
-          {usingXR && (arState === 'tracking' || arState === 'scanning-floor') && (
-            <div className="flex gap-1.5">
-              <HeadingBtn
-                label="Повернуть влево"
-                onClick={() => adjustCalibrationHeading(-15)}
-              >
-                ↺
-              </HeadingBtn>
-              <HeadingBtn label="Сброс AR" onClick={() => resetARCalibration()}>
-                ⟲
-              </HeadingBtn>
-              <HeadingBtn
-                label="Повернуть вправо"
-                onClick={() => adjustCalibrationHeading(15)}
-              >
-                ↻
-              </HeadingBtn>
-            </div>
-          )}
-        </div>
+        {/* Левый верх: поворот AR-маршрута (только WebXR) */}
+        {usingXR && (arState === 'tracking' || arState === 'scanning-floor') && (
+          <div className="absolute left-3 top-24 pointer-events-auto flex gap-1.5">
+            <HeadingBtn
+              label="Повернуть влево"
+              onClick={() => adjustCalibrationHeading(-15)}
+            >
+              ↺
+            </HeadingBtn>
+            <HeadingBtn label="Сброс AR" onClick={() => resetARCalibration()}>
+              ⟲
+            </HeadingBtn>
+            <HeadingBtn
+              label="Повернуть вправо"
+              onClick={() => adjustCalibrationHeading(15)}
+            >
+              ↻
+            </HeadingBtn>
+          </div>
+        )}
 
         {/* Правый верх: миникарта */}
         {showMinimap && (
@@ -234,6 +233,9 @@ export function ARNavigationPage() {
                 ⌗
               </RoundBtn>
             )}
+            <div className="flex flex-col items-center gap-1">
+              <LocationFixBar compact />
+            </div>
             <RoundBtn onClick={() => navigate('/')} label="Выход">✕</RoundBtn>
           </div>
         </div>

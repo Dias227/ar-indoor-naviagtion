@@ -298,10 +298,18 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
 
     const startNode = graph.getNode(startRoom.nodeId)!;
     const snapped = graph.snapToGraph(startNode.position, startNode.floor);
+    const startPos = snapped ? snapped.position : { ...startNode.position };
     set({
       route,
-      userPosition: snapped ? snapped.position : { ...startNode.position },
+      userPosition: startPos,
       userFloor: startNode.floor,
+      lastFix: {
+        nodeId: startNode.id,
+        position: startPos,
+        floor: startNode.floor,
+        source: 'manual',
+        timestamp: Date.now(),
+      },
       progress: { fraction: 0, travelled: 0, remaining: route.totalDistance },
       currentStep: route.steps[0] ?? null,
       arrived: false,
@@ -413,7 +421,6 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       source: 'manual',
       timestamp: Date.now(),
     });
-    get().resetARCalibration();
   },
 
   adjustCalibrationHeading: (deltaDeg) => {

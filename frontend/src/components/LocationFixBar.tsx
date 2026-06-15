@@ -1,9 +1,5 @@
 /**
- * Ручная фиксация «где я сейчас» — аналог visual positioning без SLAM.
- *
- * Пользователь выбирает ближайшее помещение/точку (например «Вход»),
- * приложение ставит его на узел графа и пересчитывает маршрут.
- * Это решает главную проблему: телефон не знает позицию в здании.
+ * Ручная фиксация «где я сейчас» — вызывается по кнопке, не мешает навигации.
  */
 import { useMemo, useState } from 'react';
 import type { Room } from '@/types';
@@ -12,6 +8,7 @@ import { NeonButton } from '@/components/NeonButton';
 import { useNavigationStore } from '@/store/useNavigationStore';
 
 interface LocationFixBarProps {
+  /** Маленькая кнопка-иконка (AR, карта). */
   compact?: boolean;
 }
 
@@ -36,67 +33,69 @@ export function LocationFixBar({ compact = false }: LocationFixBarProps) {
     setOpen(false);
   };
 
-  if (compact && !open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-full border border-neon/40 bg-black/70 px-4 py-2 text-xs font-semibold text-neon backdrop-blur-md active:scale-95"
-      >
-        📍 Где я?
-      </button>
-    );
-  }
-
   return (
-    <div className={compact ? 'pointer-events-auto' : ''}>
-      {!open ? (
-        <NeonButton
-          full={!compact}
-          variant={compact ? 'ghost' : 'neon'}
-          onClick={() => setOpen(true)}
-        >
-          📍 Я здесь — указать место вручную
-        </NeonButton>
-      ) : (
-        <GlassCard strong className="flex max-h-[50vh] flex-col gap-3 overflow-hidden p-4">
-          <div className="flex items-center justify-between">
-            <p className="font-semibold">Где вы сейчас?</p>
-            <button onClick={() => setOpen(false)} className="text-white/50">
-              ✕
-            </button>
-          </div>
-          <p className="text-xs leading-relaxed text-white/50">
-            Выберите помещение, рядом с которым вы стоите. Карта и маршрут
-            обновятся сразу — без AR и GPS.
-          </p>
-          {startRoom && (
-            <NeonButton variant="ghost" full onClick={() => pick(startRoom)}>
-              ↩ Старт маршрута: {startRoom.name}
-            </NeonButton>
-          )}
-          <div className="flex-1 overflow-y-auto">
-            {byFloor.map(([floor, rooms]) => (
-              <div key={floor} className="mb-3">
-                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-white/35">
-                  {floor} этаж {floor === userFloor ? '· вы здесь' : ''}
-                </p>
-                <div className="flex flex-col gap-1.5">
-                  {rooms.map((room) => (
-                    <button
-                      key={room.id}
-                      onClick={() => pick(room)}
-                      className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2.5 text-left text-sm active:bg-neon/10"
-                    >
-                      <span>{room.icon ?? '📍'}</span>
-                      <span className="truncate">{room.name}</span>
-                    </button>
-                  ))}
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={
+          compact
+            ? 'rounded-full border border-white/15 bg-black/50 px-3 py-1.5 text-[11px] text-white/70 backdrop-blur-md active:scale-95'
+            : 'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white/70 active:bg-white/10'
+        }
+        aria-label="Указать, где вы сейчас"
+      >
+        📍 {compact ? 'Где я?' : 'Указать место на карте'}
+      </button>
+
+      {open && (
+        <div className="pointer-events-auto fixed inset-0 z-50 flex items-end justify-center bg-black/55 p-4 backdrop-blur-sm">
+          <GlassCard strong className="flex max-h-[70vh] w-full max-w-md flex-col gap-3 overflow-hidden p-4">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold">Где вы сейчас?</p>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-2 py-1 text-white/50 active:bg-white/10"
+                aria-label="Закрыть"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-xs leading-relaxed text-white/50">
+              Нужно только в начале маршрута или если позиция сбилась. Выберите
+              ближайшее помещение.
+            </p>
+            {startRoom && (
+              <NeonButton variant="ghost" full onClick={() => pick(startRoom)}>
+                ↩ Старт маршрута: {startRoom.name}
+              </NeonButton>
+            )}
+            <div className="flex-1 overflow-y-auto">
+              {byFloor.map(([floor, rooms]) => (
+                <div key={floor} className="mb-3">
+                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-white/35">
+                    {floor} этаж {floor === userFloor ? '· вы здесь' : ''}
+                  </p>
+                  <div className="flex flex-col gap-1.5">
+                    {rooms.map((room) => (
+                      <button
+                        key={room.id}
+                        type="button"
+                        onClick={() => pick(room)}
+                        className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2.5 text-left text-sm active:bg-neon/10"
+                      >
+                        <span>{room.icon ?? '📍'}</span>
+                        <span className="truncate">{room.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
+              ))}
+            </div>
+          </GlassCard>
+        </div>
       )}
-    </div>
+    </>
   );
 }
