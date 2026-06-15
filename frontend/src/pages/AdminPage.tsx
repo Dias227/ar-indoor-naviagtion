@@ -11,11 +11,12 @@
  * Все изменения применяются локально мгновенно (офлайн-first) и
  * отправляются на backend (FastAPI → Firestore) в фоне.
  */
-import { useMemo, useState } from 'react';
-import type { Floor, NavEdge, NavNode, Room } from '@/types';
+import { Suspense, useMemo, useState } from 'react';
+import type { Floor, NavEdge, NavNode, Room, Vec3 } from '@/types';
 import { PageShell } from '@/components/PageShell';
 import { GlassCard } from '@/components/GlassCard';
 import { NeonButton } from '@/components/NeonButton';
+import { EditorScene } from '@/three/EditorScene';
 import { useNavigationStore } from '@/store/useNavigationStore';
 import {
   adminDeleteEdge,
@@ -28,7 +29,7 @@ import {
   adminUploadModel,
 } from '@/services/api';
 
-type Tab = 'rooms' | 'graph' | 'floors' | 'building';
+type Tab = 'rooms' | 'graph' | 'place3d' | 'floors' | 'building';
 
 const genId = (prefix: string) =>
   `${prefix}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
@@ -38,25 +39,32 @@ export function AdminPage() {
   const [status, setStatus] = useState<string>('');
 
   const buildingData = useNavigationStore((s) => s.buildingData);
-  const setBuildingData = useNavigationStore((s) => s.setBuildingData);
+  const saveBuildingEdits = useNavigationStore((s) => s.saveBuildingEdits);
 
-  /** Применить изменение локально + синхронизировать с backend. */
+  /**
+   * Применить изменение: мгновенно локально (память + localStorage, чтобы
+   * правки пережили перезагрузку без backend) + фоновая синхронизация с API.
+   */
   const apply = (
     patch: Partial<typeof buildingData>,
     sync?: () => Promise<unknown>,
   ) => {
-    setBuildingData({ ...buildingData, ...patch });
+    saveBuildingEdits({ ...buildingData, ...patch });
     if (sync) {
       sync()
-        .then(() => setStatus('✅ Сохранено в Firebase'))
-        .catch(() => setStatus('⚠️ Backend недоступен — изменения локальные'));
+        .then(() => setStatus('✅ Сохранено (локально + Firebase)'))
+        .catch(() => setStatus('💾 Сохранено локально (backend недоступен)'));
       setTimeout(() => setStatus(''), 3500);
+    } else {
+      setStatus('💾 Сохранено локально');
+      setTimeout(() => setStatus(''), 2000);
     }
   };
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'rooms', label: 'Помещения' },
-    { id: 'graph', label: 'Граф' },
+    { id: 'graph', label: '2D-граф' },
+    { id: 'place3d', label: '3D-модель' },
     { id: 'floors', label: 'Этажи' },
     { id: 'building', label: 'Здание' },
   ];
@@ -85,6 +93,7 @@ export function AdminPage() {
 
       {tab === 'rooms' && <RoomsTab apply={apply} />}
       {tab === 'graph' && <GraphTab apply={apply} />}
+      {tab === 'place3d' && <Place3DTab apply={apply} />}
       {tab === 'floors' && <FloorsTab apply={apply} />}
       {tab === 'building' && <BuildingTab apply={apply} setStatus={setStatus} />}
     </PageShell>
@@ -550,6 +559,373 @@ function nodeIsType(nodes: NavNode[], id: string, type: NavNode['type']): boolea
   return nodes.find((n) => n.id === id)?.type === type;
 }
 
+// ───────────────────────── 3D-модель (точки по месту) ─────────────────────────
+
+const NODE_TYPE_OPTIONS: { value: NavNode['type']; label: string }[] = [
+  { value: 'waypoint', label: 'Точка' },
+  { value: 'room', label: 'Дверь' },
+  { value: 'stairs', label: 'Лестница' },
+  { value: 'elevator', label: 'Лифт' },
+  { value: 'entrance', label: 'Вход' },
+  { value: 'marker', label: 'QR-маркер' },
+];
+
+type EditMode = 'add' | 'select' | 'move' | 'connect';
+
+function Place3DTab({ apply }: { apply: ApplyFn }) {
+  const data = useNavigationStore((s) => s.buildingData);
+  const [floor, setFloor] = useState(1);
+  const [mode, setMode] = useState<EditMode>('add');
+  const [nodeType, setNodeType] = useState<NavNode['type']>('waypoint');
+  const [selected, setSelected] = useState<string | null>(null);
+  const [connectFrom, setConnectFrom] = useState<string | null>(null);
+  const [isolate, setIsolate] = useState(true);
+
+  const floorMeta = data.building.floors.find((f) => f.level === floor);
+  const floorElevation = floorMeta?.elevation ?? 0;
+
+  // Скрываем этажи выше текущего, чтобы кликать именно по нужному уровню.
+  const isolateMaxY = useMemo(() => {
+    if (!isolate) return undefined;
+    const above = data.building.floors
+      .map((f) => f.elevation)
+      .filter((y) => y > floorElevation)
+      .sort((a, b) => a - b);
+    return above[0] !== undefined ? above[0] - 0.2 : floorElevation + 3.2;
+  }, [isolate, data.building.floors, floorElevation]);
+
+  const selectedNode = selected
+    ? data.nodes.find((n) => n.id === selected) ?? null
+    : null;
+  const selectedEdges = selected
+    ? data.edges.filter((e) => e.from === selected || e.to === selected)
+    : [];
+
+  const round = (v: number) => Math.round(v * 10) / 10;
+
+  const handleSurface = (p: Vec3) => {
+    if (mode === 'add') {
+      const node: NavNode = {
+        id: genId('n'),
+        position: { x: round(p.x), y: round(floorElevation), z: round(p.z) },
+        floor,
+        type: nodeType,
+      };
+      apply(
+        { nodes: [...data.nodes, node] },
+        () => adminSaveNode(data.building.id, node),
+      );
+      setSelected(node.id);
+    } else if (mode === 'move' && selectedNode) {
+      const updated: NavNode = {
+        ...selectedNode,
+        position: { ...selectedNode.position, x: round(p.x), z: round(p.z) },
+      };
+      apply(
+        { nodes: data.nodes.map((n) => (n.id === selectedNode.id ? updated : n)) },
+        () => adminSaveNode(data.building.id, updated),
+      );
+    }
+  };
+
+  const handleNode = (id: string) => {
+    if (mode === 'connect') {
+      if (connectFrom && connectFrom !== id) {
+        const fromType = data.nodes.find((n) => n.id === connectFrom)?.type;
+        const toType = data.nodes.find((n) => n.id === id)?.type;
+        const kind: NavEdge['kind'] =
+          fromType === 'stairs' || toType === 'stairs'
+            ? 'stairs'
+            : fromType === 'elevator' || toType === 'elevator'
+              ? 'elevator'
+              : 'corridor';
+        const edge: NavEdge = {
+          id: genId('e'),
+          from: connectFrom,
+          to: id,
+          kind,
+          bidirectional: true,
+        };
+        apply(
+          { edges: [...data.edges, edge] },
+          () => adminSaveEdge(data.building.id, edge),
+        );
+        setConnectFrom(id);
+        setSelected(id);
+      } else {
+        setConnectFrom(id);
+        setSelected(id);
+      }
+    } else {
+      setSelected((cur) => (cur === id ? null : id));
+    }
+  };
+
+  const updateSelected = (updated: NavNode) => {
+    apply(
+      { nodes: data.nodes.map((n) => (n.id === updated.id ? updated : n)) },
+      () => adminSaveNode(data.building.id, updated),
+    );
+  };
+
+  const deleteSelected = () => {
+    if (!selected) return;
+    const edges = data.edges.filter(
+      (e) => e.from !== selected && e.to !== selected,
+    );
+    apply(
+      { nodes: data.nodes.filter((n) => n.id !== selected), edges },
+      () => adminDeleteNode(data.building.id, selected),
+    );
+    setSelected(null);
+    setConnectFrom(null);
+  };
+
+  const deleteEdge = (id: string) => {
+    apply(
+      { edges: data.edges.filter((e) => e.id !== id) },
+      () => adminDeleteEdge(data.building.id, id),
+    );
+  };
+
+  const makeRoom = () => {
+    if (!selectedNode) return;
+    const room: Room = {
+      id: genId('r'),
+      name: selectedNode.name || 'Новое помещение',
+      floor: selectedNode.floor,
+      category: 'office',
+      nodeId: selectedNode.id,
+      isStart: true,
+      isDestination: true,
+      icon: '🚪',
+    };
+    const updatedNode: NavNode = {
+      ...selectedNode,
+      type: 'room',
+      roomId: room.id,
+    };
+    apply(
+      {
+        rooms: [...data.rooms, room],
+        nodes: data.nodes.map((n) =>
+          n.id === selectedNode.id ? updatedNode : n,
+        ),
+      },
+      async () => {
+        await adminSaveNode(data.building.id, updatedNode);
+        await adminSaveRoom(data.building.id, room);
+      },
+    );
+  };
+
+  const modeButtons: { id: EditMode; label: string }[] = [
+    { id: 'add', label: '➕ Точка' },
+    { id: 'select', label: '👆 Выбрать' },
+    { id: 'move', label: '✋ Двигать' },
+    { id: 'connect', label: '🔗 Соединить' },
+  ];
+
+  const hint: Record<EditMode, string> = {
+    add: 'Кликни по полу модели — добавится точка выбранного типа.',
+    select: 'Кликни по точке, чтобы изменить её свойства.',
+    move: 'Выбери точку, затем кликни по новому месту на полу.',
+    connect: 'Кликни две точки подряд — между ними создастся путь (ребро).',
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <GlassCard className="flex flex-col gap-2.5 p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            className="admin-input !w-auto"
+            value={floor}
+            onChange={(e) => {
+              setFloor(Number(e.target.value));
+              setSelected(null);
+              setConnectFrom(null);
+            }}
+          >
+            {data.building.floors.map((f) => (
+              <option key={f.id} value={f.level}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+          {mode === 'add' && (
+            <select
+              className="admin-input !w-auto"
+              value={nodeType}
+              onChange={(e) => setNodeType(e.target.value as NavNode['type'])}
+            >
+              {NODE_TYPE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          )}
+          <button
+            onClick={() => setIsolate((v) => !v)}
+            className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+              isolate
+                ? 'bg-neon/20 text-neon shadow-neon'
+                : 'bg-white/5 text-white/60'
+            }`}
+          >
+            {isolate ? '👁 Только этаж' : '👁 Всё здание'}
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {modeButtons.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => {
+                setMode(m.id);
+                setConnectFrom(null);
+              }}
+              className={`flex-1 rounded-lg px-2 py-2 text-xs font-semibold transition-all ${
+                mode === m.id
+                  ? 'bg-neon/20 text-neon shadow-neon'
+                  : 'bg-white/5 text-white/55'
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </GlassCard>
+
+      <p className="px-1 text-xs text-white/45">
+        {hint[mode]} Зажми и тяни — поворот камеры, колесо/щипок — зум.
+      </p>
+
+      <GlassCard className="overflow-hidden p-0">
+        <div className="h-[420px] w-full">
+          <Suspense
+            fallback={
+              <div className="flex h-full items-center justify-center text-sm text-white/40">
+                Загрузка 3D-модели…
+              </div>
+            }
+          >
+            <EditorScene
+              modelUrl={data.building.modelUrl}
+              nodes={data.nodes}
+              edges={data.edges}
+              floor={floor}
+              floorElevation={floorElevation}
+              isolateMaxY={isolateMaxY}
+              selectedId={selected}
+              onPickSurface={handleSurface}
+              onPickNode={handleNode}
+            />
+          </Suspense>
+        </div>
+      </GlassCard>
+
+      {selectedNode && (
+        <GlassCard strong className="flex flex-col gap-3 p-4">
+          <div className="flex items-center justify-between">
+            <p className="font-mono text-sm text-neon">{selectedNode.id}</p>
+            <button
+              onClick={deleteSelected}
+              className="text-sm text-accent-pink"
+            >
+              Удалить точку
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Название">
+              <input
+                className="admin-input"
+                value={selectedNode.name ?? ''}
+                placeholder="напр. Кабинет 205"
+                onChange={(e) =>
+                  updateSelected({ ...selectedNode, name: e.target.value })
+                }
+              />
+            </Field>
+            <Field label="Тип точки">
+              <select
+                className="admin-input"
+                value={selectedNode.type}
+                onChange={(e) =>
+                  updateSelected({
+                    ...selectedNode,
+                    type: e.target.value as NavNode['type'],
+                  })
+                }
+              >
+                {NODE_TYPE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {(['x', 'y', 'z'] as const).map((axis) => (
+              <Field key={axis} label={axis.toUpperCase()}>
+                <input
+                  type="number"
+                  step="0.1"
+                  className="admin-input"
+                  value={selectedNode.position[axis]}
+                  onChange={(e) =>
+                    updateSelected({
+                      ...selectedNode,
+                      position: {
+                        ...selectedNode.position,
+                        [axis]: Number(e.target.value),
+                      },
+                    })
+                  }
+                />
+              </Field>
+            ))}
+          </div>
+          {!data.rooms.some((r) => r.nodeId === selectedNode.id) && (
+            <NeonButton variant="ghost" full onClick={makeRoom}>
+              🚪 Сделать помещением (POI)
+            </NeonButton>
+          )}
+          {selectedEdges.length > 0 && (
+            <div>
+              <p className="mb-1.5 text-xs text-white/50">Соединения:</p>
+              <div className="flex flex-col gap-1.5">
+                {selectedEdges.map((e) => (
+                  <div
+                    key={e.id}
+                    className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-1.5 text-xs"
+                  >
+                    <span className="font-mono text-white/70">
+                      {e.from === selected ? e.to : e.from}
+                      <span className="ml-2 text-white/35">({e.kind})</span>
+                    </span>
+                    <button
+                      onClick={() => deleteEdge(e.id)}
+                      className="text-accent-pink"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </GlassCard>
+      )}
+
+      <GlassCard className="p-3 text-center text-xs text-white/45">
+        Этаж {floor}: {data.nodes.filter((n) => n.floor === floor).length} точек ·{' '}
+        {data.rooms.filter((r) => r.floor === floor).length} помещений
+      </GlassCard>
+    </div>
+  );
+}
+
 // ───────────────────────── Этажи ─────────────────────────
 
 function FloorsTab({ apply }: { apply: ApplyFn }) {
@@ -632,11 +1008,22 @@ function BuildingTab({
   setStatus: (s: string) => void;
 }) {
   const data = useNavigationStore((s) => s.buildingData);
+  const resetBuildingEdits = useNavigationStore((s) => s.resetBuildingEdits);
   const [uploading, setUploading] = useState(false);
 
   const updateBuilding = (patch: Partial<typeof data.building>) => {
     const building = { ...data.building, ...patch };
     apply({ building });
+  };
+
+  const handleReset = () => {
+    const ok = window.confirm(
+      'Сбросить все правки (точки, помещения, этажи) к исходным данным колледжа? Это действие нельзя отменить.',
+    );
+    if (!ok) return;
+    resetBuildingEdits();
+    setStatus('↺ Правки сброшены к исходным');
+    setTimeout(() => setStatus(''), 3000);
   };
 
   const saveAll = () => {
@@ -715,8 +1102,18 @@ function BuildingTab({
         </p>
       </GlassCard>
 
+      <GlassCard className="p-3 text-xs text-white/45">
+        💾 Все правки сохраняются на этом устройстве (localStorage) и
+        переживают перезагрузку даже без сервера. Кнопка ниже синхронизирует
+        их с backend, если он доступен.
+      </GlassCard>
+
       <NeonButton full onClick={saveAll}>
         💾 Сохранить всё в Firebase
+      </NeonButton>
+
+      <NeonButton full variant="danger" onClick={handleReset}>
+        ↺ Сбросить правки к исходным
       </NeonButton>
     </div>
   );

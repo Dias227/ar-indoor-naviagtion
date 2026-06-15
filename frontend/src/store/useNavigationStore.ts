@@ -22,9 +22,21 @@ import {
 } from '@/navigation/routeBuilder';
 import { collegeBuildingData } from '@/navigation/collegeBuilding';
 import { fetchBuilding, fetchBuildings } from '@/services/api';
+import { StorageKeys, loadJSON, removeKey, saveJSON } from '@/services/storage';
 
 /** Расстояние от маршрута (м), после которого запускается пересчёт. */
 const REROUTE_THRESHOLD = 3.5;
+
+/**
+ * Локально сохранённые правки здания (из админки). На GitHub Pages backend'а
+ * нет, поэтому правки графа/помещений должны переживать перезагрузку через
+ * localStorage. Если правок нет — используется встроенное здание колледжа.
+ */
+const persistedEdit = loadJSON<BuildingData | null>(
+  StorageKeys.editedBuilding,
+  null,
+);
+const initialBuildingData: BuildingData = persistedEdit ?? collegeBuildingData;
 
 interface NavigationState {
   // Данные
@@ -53,6 +65,10 @@ interface NavigationState {
   loadBuildings: () => Promise<void>;
   selectBuilding: (id: string) => Promise<void>;
   setBuildingData: (data: BuildingData) => void;
+  /** Сохранить правки здания (память + localStorage + список зданий). */
+  saveBuildingEdits: (data: BuildingData) => void;
+  /** Сбросить правки к встроенным данным колледжа. */
+  resetBuildingEdits: () => void;
   setStartRoom: (room: Room | null) => void;
   setEndRoom: (room: Room | null) => void;
   computeRoute: (opts?: { preferElevator?: boolean }) => boolean;
@@ -67,9 +83,9 @@ function makeGraph(data: BuildingData): NavigationGraph {
 }
 
 export const useNavigationStore = create<NavigationState>((set, get) => ({
-  buildings: [collegeBuildingData],
-  buildingData: collegeBuildingData,
-  graph: makeGraph(collegeBuildingData),
+  buildings: [initialBuildingData],
+  buildingData: initialBuildingData,
+  graph: makeGraph(initialBuildingData),
 
   startRoom: null,
   endRoom: null,
@@ -86,12 +102,56 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
 
   loadBuildings: async () => {
     const buildings = await fetchBuildings();
-    set({ buildings });
+    // Локальные правки имеют приоритет над встроенными/кэшированными данными.
+    const edited = loadJSON<BuildingData | null>(StorageKeys.editedBuilding, null);
+    let merged = buildings;
+    if (edited) {
+      const has = buildings.some((b) => b.building.id === edited.building.id);
+      merged = has
+        ? buildings.map((b) =>
+            b.building.id === edited.building.id ? edited : b,
+          )
+        : [edited, ...buildings];
+    }
+    set({ buildings: merged });
   },
 
   selectBuilding: async (id) => {
+    const edited = loadJSON<BuildingData | null>(StorageKeys.editedBuilding, null);
+    if (edited && edited.building.id === id) {
+      get().setBuildingData(edited);
+      return;
+    }
     const data = await fetchBuilding(id);
     get().setBuildingData(data);
+  },
+
+  saveBuildingEdits: (data) => {
+    saveJSON(StorageKeys.editedBuilding, data);
+    set((state) => ({
+      buildingData: data,
+      graph: makeGraph(data),
+      buildings: state.buildings.some(
+        (b) => b.building.id === data.building.id,
+      )
+        ? state.buildings.map((b) =>
+            b.building.id === data.building.id ? data : b,
+          )
+        : [data, ...state.buildings],
+    }));
+  },
+
+  resetBuildingEdits: () => {
+    removeKey(StorageKeys.editedBuilding);
+    set({
+      buildingData: collegeBuildingData,
+      graph: makeGraph(collegeBuildingData),
+      buildings: [collegeBuildingData],
+      route: null,
+      startRoom: null,
+      endRoom: null,
+      arrived: false,
+    });
   },
 
   setBuildingData: (data) => {
