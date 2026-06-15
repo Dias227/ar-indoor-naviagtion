@@ -1,9 +1,10 @@
 /**
  * Корневой компонент: маршрутизация страниц приложения.
  */
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { HomePage } from '@/pages/HomePage';
+import { useNavigationStore } from '@/store/useNavigationStore';
 
 // Тяжёлые страницы (Three.js, AR) грузим лениво — быстрый первый экран.
 const BuildingSelectPage = lazy(() =>
@@ -49,6 +50,12 @@ function PageLoader() {
 }
 
 export default function App() {
+  const loadBuildings = useNavigationStore((s) => s.loadBuildings);
+
+  useEffect(() => {
+    void loadBuildings();
+  }, [loadBuildings]);
+
   return (
     <HashRouter>
       <Suspense fallback={<PageLoader />}>

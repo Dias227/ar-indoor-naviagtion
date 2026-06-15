@@ -4,6 +4,8 @@
  * Управляет: выбором здания/точек, графом, активным маршрутом,
  * позицией пользователя, прогрессом, пересчётом маршрута и
  * фиксациями позиции от QR/маркеров.
+ *
+ * Данные здания: offline-first + облако Firebase Firestore (если настроено).
  */
 import { create } from 'zustand';
 import type {
@@ -22,16 +24,18 @@ import {
 } from '@/navigation/routeBuilder';
 import { collegeBuildingData } from '@/navigation/collegeBuilding';
 import { fetchBuilding, fetchBuildings } from '@/services/api';
+import {
+  cloudConfigured,
+  persistBuilding,
+  pullFromCloud,
+  pushToCloud,
+  type CloudSyncStatus,
+} from '@/services/cloudSync';
 import { StorageKeys, loadJSON, removeKey, saveJSON } from '@/services/storage';
 
 /** Расстояние от маршрута (м), после которого запускается пересчёт. */
 const REROUTE_THRESHOLD = 3.5;
 
-/**
- * Локально сохранённые правки здания (из админки). На GitHub Pages backend'а
- * нет, поэтому правки графа/помещений должны переживать перезагрузку через
- * localStorage. Если правок нет — используется встроенное здание колледжа.
- */
 const persistedEdit = loadJSON<BuildingData | null>(
   StorageKeys.editedBuilding,
   null,
@@ -39,20 +43,16 @@ const persistedEdit = loadJSON<BuildingData | null>(
 const initialBuildingData: BuildingData = persistedEdit ?? collegeBuildingData;
 
 interface NavigationState {
-  // Данные
   buildings: BuildingData[];
   buildingData: BuildingData;
   graph: NavigationGraph;
 
-  // Выбор пользователя
   startRoom: Room | null;
   endRoom: Room | null;
 
-  // Маршрут
   route: RouteResult | null;
   alternativeAvailable: boolean;
 
-  // Позиция и прогресс
   userPosition: Vec3 | null;
   userFloor: number;
   userHeading: number;
@@ -61,13 +61,15 @@ interface NavigationState {
   arrived: boolean;
   lastFix: PositionFix | null;
 
-  // Действия
+  cloudConfigured: boolean;
+  cloudSyncStatus: CloudSyncStatus;
+  cloudLastSyncedAt: number | null;
+
   loadBuildings: () => Promise<void>;
+  syncFromCloud: () => Promise<boolean>;
   selectBuilding: (id: string) => Promise<void>;
   setBuildingData: (data: BuildingData) => void;
-  /** Сохранить правки здания (память + localStorage + список зданий). */
   saveBuildingEdits: (data: BuildingData) => void;
-  /** Сбросить правки к встроенным данным колледжа. */
   resetBuildingEdits: () => void;
   setStartRoom: (room: Room | null) => void;
   setEndRoom: (room: Room | null) => void;
@@ -100,24 +102,108 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   arrived: false,
   lastFix: null,
 
+  cloudConfigured: cloudConfigured(),
+  cloudSyncStatus: cloudConfigured() ? 'idle' : 'offline',
+  cloudLastSyncedAt: null,
+
   loadBuildings: async () => {
-    const buildings = await fetchBuildings();
-    // Локальные правки имеют приоритет над встроенными/кэшированными данными.
-    const edited = loadJSON<BuildingData | null>(StorageKeys.editedBuilding, null);
-    let merged = buildings;
-    if (edited) {
-      const has = buildings.some((b) => b.building.id === edited.building.id);
-      merged = has
-        ? buildings.map((b) =>
-            b.building.id === edited.building.id ? edited : b,
-          )
-        : [edited, ...buildings];
+    set({ cloudSyncStatus: 'syncing' });
+
+    if (cloudConfigured()) {
+      try {
+        const pulled = await pullFromCloud();
+        if (pulled) {
+          set({
+            buildings: pulled.buildings,
+            buildingData: pulled.active,
+            graph: makeGraph(pulled.active),
+            cloudSyncStatus: 'synced',
+            cloudLastSyncedAt: pulled.updatedAt,
+          });
+          return;
+        }
+      } catch {
+        /* облако недоступно — фолбэк ниже */
+      }
     }
-    set({ buildings: merged });
+
+    try {
+      const buildings = await fetchBuildings();
+      const edited = loadJSON<BuildingData | null>(
+        StorageKeys.editedBuilding,
+        null,
+      );
+      let merged = buildings;
+      if (edited) {
+        const has = buildings.some((b) => b.building.id === edited.building.id);
+        merged = has
+          ? buildings.map((b) =>
+              b.building.id === edited.building.id ? edited : b,
+            )
+          : [edited, ...buildings];
+      }
+      set({
+        buildings: merged,
+        cloudSyncStatus: cloudConfigured() ? 'error' : 'offline',
+      });
+    } catch {
+      set({ cloudSyncStatus: 'offline' });
+    }
+  },
+
+  syncFromCloud: async () => {
+    if (!cloudConfigured()) {
+      set({ cloudSyncStatus: 'offline' });
+      return false;
+    }
+    set({ cloudSyncStatus: 'syncing' });
+    try {
+      const pulled = await pullFromCloud();
+      if (pulled) {
+        set({
+          buildings: pulled.buildings,
+          buildingData: pulled.active,
+          graph: makeGraph(pulled.active),
+          route: null,
+          startRoom: null,
+          endRoom: null,
+          arrived: false,
+          cloudSyncStatus: 'synced',
+          cloudLastSyncedAt: pulled.updatedAt,
+        });
+        return true;
+      }
+      const ok = await pushToCloud(get().buildingData);
+      set({
+        cloudSyncStatus: ok ? 'synced' : 'error',
+        cloudLastSyncedAt: ok ? Date.now() : get().cloudLastSyncedAt,
+      });
+      return ok;
+    } catch {
+      set({ cloudSyncStatus: 'error' });
+      return false;
+    }
   },
 
   selectBuilding: async (id) => {
-    const edited = loadJSON<BuildingData | null>(StorageKeys.editedBuilding, null);
+    if (cloudConfigured()) {
+      try {
+        const pulled = await pullFromCloud();
+        if (pulled) {
+          const picked =
+            pulled.buildings.find((b) => b.building.id === id) ?? pulled.active;
+          get().setBuildingData(picked);
+          return;
+        }
+      } catch {
+        /* локальный фолбэк */
+      }
+    }
+
+    const edited = loadJSON<BuildingData | null>(
+      StorageKeys.editedBuilding,
+      null,
+    );
     if (edited && edited.building.id === id) {
       get().setBuildingData(edited);
       return;
@@ -127,7 +213,6 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   },
 
   saveBuildingEdits: (data) => {
-    saveJSON(StorageKeys.editedBuilding, data);
     set((state) => ({
       buildingData: data,
       graph: makeGraph(data),
@@ -139,10 +224,23 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
           )
         : [data, ...state.buildings],
     }));
+    saveJSON(StorageKeys.editedBuilding, data);
+
+    void persistBuilding(data).then(({ cloudOk, updatedAt }) => {
+      set({
+        cloudSyncStatus: cloudConfigured()
+          ? cloudOk
+            ? 'synced'
+            : 'error'
+          : 'offline',
+        cloudLastSyncedAt: cloudOk ? updatedAt : get().cloudLastSyncedAt,
+      });
+    });
   },
 
   resetBuildingEdits: () => {
     removeKey(StorageKeys.editedBuilding);
+    removeKey(StorageKeys.buildingUpdatedAt);
     set({
       buildingData: collegeBuildingData,
       graph: makeGraph(collegeBuildingData),
@@ -152,6 +250,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       endRoom: null,
       arrived: false,
     });
+    void persistBuilding(collegeBuildingData);
   },
 
   setBuildingData: (data) => {
@@ -202,10 +301,6 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       currentStep: null,
     }),
 
-  /**
-   * Обновление позиции пользователя (из AR-трекинга или симуляции).
-   * Автоматически: прогресс, текущая инструкция, пересчёт при сходе с маршрута.
-   */
   updateUserPosition: (pos, heading) => {
     const { route, graph, endRoom, userFloor } = get();
     const patch: Partial<NavigationState> = { userPosition: pos };
@@ -220,13 +315,11 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       };
       patch.currentStep = nextStep(route, prog.travelled);
 
-      // Прибытие: ближе 1.5 м к финальной точке
       const goal = route.points[route.points.length - 1];
       if (distance(pos, goal) < 1.5) {
         patch.arrived = true;
       }
 
-      // Пересчёт при значительном отклонении от маршрута
       const nearest = route.points[prog.nearestIndex];
       if (distance(pos, nearest) > REROUTE_THRESHOLD && endRoom) {
         const startNode = graph.nearestNode(pos, userFloor);
@@ -247,10 +340,6 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     set(patch);
   },
 
-  /**
-   * Жёсткая фиксация позиции по QR-коду или визуальному маркеру.
-   * Перепривязывает пользователя к узлу графа и пересчитывает маршрут.
-   */
   applyPositionFix: (fix) => {
     const { graph, endRoom } = get();
     const node = graph.getNode(fix.nodeId);

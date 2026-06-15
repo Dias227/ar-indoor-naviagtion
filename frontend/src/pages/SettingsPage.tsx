@@ -5,16 +5,70 @@ import { PageShell } from '@/components/PageShell';
 import { GlassCard } from '@/components/GlassCard';
 import { NeonButton } from '@/components/NeonButton';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import { useNavigationStore } from '@/store/useNavigationStore';
 import { useVoiceGuidance } from '@/hooks/useVoiceGuidance';
 
 const ROUTE_COLORS = ['#00e5ff', '#aaff00', '#ff2d78', '#7c4dff', '#ffaa00'];
 
+function formatSyncTime(ts: number | null): string {
+  if (!ts) return 'ещё не синхронизировалось';
+  return new Date(ts).toLocaleString('ru-RU');
+}
+
+function syncStatusLabel(
+  configured: boolean,
+  status: string,
+): { text: string; color: string } {
+  if (!configured) {
+    return { text: 'Облако не настроено (только этот телефон)', color: 'text-white/50' };
+  }
+  switch (status) {
+    case 'syncing':
+      return { text: 'Синхронизация…', color: 'text-neon' };
+    case 'synced':
+      return { text: 'Синхронизировано с облаком', color: 'text-neon' };
+    case 'error':
+      return { text: 'Ошибка синхронизации', color: 'text-accent-pink' };
+    default:
+      return { text: 'Ожидание синхронизации', color: 'text-white/50' };
+  }
+}
+
 export function SettingsPage() {
   const s = useSettingsStore();
   const { speak, supported } = useVoiceGuidance();
+  const cloudConfigured = useNavigationStore((st) => st.cloudConfigured);
+  const cloudSyncStatus = useNavigationStore((st) => st.cloudSyncStatus);
+  const cloudLastSyncedAt = useNavigationStore((st) => st.cloudLastSyncedAt);
+  const syncFromCloud = useNavigationStore((st) => st.syncFromCloud);
+  const syncInfo = syncStatusLabel(cloudConfigured, cloudSyncStatus);
 
   return (
     <PageShell title="Настройки" subtitle="Голос, эффекты, качество">
+      {/* Облачная синхронизация */}
+      <Section title="Облако (Firebase)">
+        <p className={`text-sm font-semibold ${syncInfo.color}`}>{syncInfo.text}</p>
+        <p className="text-xs text-white/45">
+          Последняя синхронизация: {formatSyncTime(cloudLastSyncedAt)}
+        </p>
+        <p className="text-xs leading-relaxed text-white/45">
+          Карта кабинетов сохраняется в Firebase и доступна на Android и iPhone.
+          Разметил на одном телефоне — открой сайт на другом и нажми «Загрузить из облака».
+        </p>
+        <NeonButton
+          full
+          disabled={!cloudConfigured || cloudSyncStatus === 'syncing'}
+          onClick={() => void syncFromCloud()}
+        >
+          {cloudSyncStatus === 'syncing' ? '⏳ Синхронизация…' : '☁️ Загрузить из облака'}
+        </NeonButton>
+        {!cloudConfigured && (
+          <p className="text-xs text-white/40">
+            Для включения облака задайте VITE_FIREBASE_* (см. frontend/.env.example).
+          </p>
+        )}
+      </Section>
+
       {/* Голос */}
       <Section title="Голосовой помощник">
         <Toggle

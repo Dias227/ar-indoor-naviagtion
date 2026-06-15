@@ -43,23 +43,27 @@ export function AdminPage() {
   const saveBuildingEdits = useNavigationStore((s) => s.saveBuildingEdits);
 
   /**
-   * Применить изменение: мгновенно локально (память + localStorage, чтобы
-   * правки пережили перезагрузку без backend) + фоновая синхронизация с API.
+   * Применить изменение: мгновенно локально + фоновая отправка в Firebase.
    */
   const apply = (
     patch: Partial<typeof buildingData>,
     sync?: () => Promise<unknown>,
   ) => {
     saveBuildingEdits({ ...buildingData, ...patch });
-    if (sync) {
-      sync()
-        .then(() => setStatus('✅ Сохранено (локально + Firebase)'))
-        .catch(() => setStatus('💾 Сохранено локально (backend недоступен)'));
-      setTimeout(() => setStatus(''), 3500);
-    } else {
-      setStatus('💾 Сохранено локально');
-      setTimeout(() => setStatus(''), 2000);
-    }
+    if (sync) void sync().catch(() => undefined);
+
+    const configured = useNavigationStore.getState().cloudConfigured;
+    setStatus(configured ? '☁️ Отправка в облако…' : '💾 Сохранено на устройстве');
+    setTimeout(() => {
+      const st = useNavigationStore.getState();
+      if (!configured) return;
+      setStatus(
+        st.cloudSyncStatus === 'synced'
+          ? '☁️ Сохранено в облаке'
+          : '💾 Локально (облако недоступно)',
+      );
+    }, 1200);
+    setTimeout(() => setStatus(''), 4000);
   };
 
   const tabs: { id: Tab; label: string }[] = [
@@ -1247,9 +1251,9 @@ function BuildingTab({
       </GlassCard>
 
       <GlassCard className="p-3 text-xs text-white/45">
-        💾 Все правки сохраняются на этом устройстве (localStorage) и
-        переживают перезагрузку даже без сервера. Кнопка ниже синхронизирует
-        их с backend, если он доступен.
+        ☁️ Правки сохраняются в Firebase (если настроено) и доступны на всех
+        телефонах. Локальная копия остаётся для офлайна. Кнопка ниже — резервная
+        синхронизация через backend, если он запущен локально.
       </GlassCard>
 
       <NeonButton full onClick={saveAll}>

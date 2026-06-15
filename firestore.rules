@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Карта здания: кабинеты, точки, рёбра.
+    // Для учебного проекта — открытый доступ. В продакшене добавьте auth.
+    match /buildings/{buildingId} {
+      allow read, write: if true;
+    }
+  }
+}

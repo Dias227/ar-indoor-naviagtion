@@ -13,6 +13,8 @@ export const StorageKeys = {
   lastBuilding: `${PREFIX}last-building`,
   /** Правки данных здания из админки (офлайн-персистентность без backend). */
   editedBuilding: `${PREFIX}edited-building`,
+  /** Метка времени последнего сохранения карты (для слияния с облаком). */
+  buildingUpdatedAt: `${PREFIX}building-updated-at`,
 } as const;
 
 export function loadJSON<T>(key: string, fallback: T): T {
