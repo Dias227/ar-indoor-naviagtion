@@ -1,0 +1,17 @@
+node_modules/
+dist/
+dev-dist/
+
+# Дубликат модели в корне (рабочая копия лежит в frontend/public/models/)
+/SampleScene.glb
+# Случайный lock-файл в корне (нужен только frontend/package-lock.json)
+/package-lock.json
+.venv/
+__pycache__/
+*.pyc
+backend/data/db.json
+backend/data/uploads/
+backend/firebase/serviceAccount.json
+.DS_Store
+*.local
+.env

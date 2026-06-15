@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ────────────────────────────────────────────────────────────────
+   Глобальная тема: тёмный фон, неон, glassmorphism
+   ──────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: dark;
+  --neon: #00e5ff;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: #05080f;
+  color: #e8f4ff;
+  font-family: Inter, 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* Фоновое сияние для всех страниц */
+.app-bg {
+  background:
+    radial-gradient(1100px 500px at 80% -10%, rgba(0, 229, 255, 0.10), transparent 60%),
+    radial-gradient(800px 420px at 0% 110%, rgba(124, 77, 255, 0.10), transparent 55%),
+    #05080f;
+}
+
+@layer components {
+  /* Стеклянная карточка (Apple Vision Pro style) */
+  .glass {
+    @apply rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-glass;
+  }
+  .glass-strong {
+    @apply rounded-2xl border border-white/15 bg-white/[0.1] backdrop-blur-2xl shadow-glass;
+  }
+
+  /* Неоновая кнопка */
+  .btn-neon {
+    @apply rounded-xl bg-neon/15 px-5 py-3 font-semibold text-neon
+      border border-neon/40 shadow-neon transition-all duration-200
+      active:scale-95 hover:bg-neon/25 hover:shadow-neon-strong
+      disabled:opacity-40 disabled:shadow-none disabled:pointer-events-none;
+  }
+  .btn-ghost {
+    @apply rounded-xl px-5 py-3 font-medium text-white/80 border border-white/10
+      bg-white/5 backdrop-blur-md transition-all duration-200
+      active:scale-95 hover:bg-white/10 disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  .neon-text {
+    color: var(--neon);
+    text-shadow: 0 0 14px rgba(0, 229, 255, 0.65);
+  }
+
+  /* Поля ввода админ-панели */
+  .admin-input {
+    @apply w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm
+      text-white outline-none transition-colors focus:border-neon/50;
+  }
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.25);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Безопасные зоны iPhone */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 12px);
+}
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 12px);
+}
