@@ -8,6 +8,7 @@ import { PageShell } from '@/components/PageShell';
 import { GlassCard } from '@/components/GlassCard';
 import { NeonButton } from '@/components/NeonButton';
 import { Minimap } from '@/components/Minimap';
+import { LocationFixBar } from '@/components/LocationFixBar';
 import { ScenePreview } from '@/three/ScenePreview';
 import { useNavigationStore } from '@/store/useNavigationStore';
 import { useHistoryStore } from '@/store/useHistoryStore';
@@ -81,6 +82,10 @@ export function MapPage() {
           </button>
         ))}
       </div>
+
+      <GlassCard className="mb-4 p-3">
+        <LocationFixBar />
+      </GlassCard>
 
       {/* Вид */}
       {view === '3d' ? (

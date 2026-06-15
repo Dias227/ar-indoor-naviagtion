@@ -25,6 +25,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { ARSessionState } from '@/types';
 import { useNavigationStore } from '@/store/useNavigationStore';
+import { distance } from '@/navigation/graph';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { RouteLine } from '@/three/RouteLine';
 import { requestARSession } from './webxr';
@@ -107,10 +108,20 @@ function ARWorld({
   const progress = useNavigationStore((s) => s.progress);
   const updateUserPosition = useNavigationStore((s) => s.updateUserPosition);
   const userFloor = useNavigationStore((s) => s.userFloor);
+  const startRoom = useNavigationStore((s) => s.startRoom);
+  const userPosition = useNavigationStore((s) => s.userPosition);
+  const graph = useNavigationStore((s) => s.graph);
+  const calibrationHeadingOffset = useNavigationStore(
+    (s) => s.calibrationHeadingOffset,
+  );
+  const calibrationGeneration = useNavigationStore(
+    (s) => s.calibrationGeneration,
+  );
   const { routeColor, showParticles } = useSettingsStore();
 
   const reticleRef = useRef<THREE.Group>(null);
   const anchorGroupRef = useRef<THREE.Group>(null);
+  const baseThetaRef = useRef(0);
 
   const hitTestSourceRef = useRef<XRHitTestSource | null>(null);
   const anchorRef = useRef<XRAnchor | null>(null);
@@ -154,18 +165,33 @@ function ARWorld({
         .setY(0)
         .normalize();
 
-      // Начальное направление маршрута в координатах здания
-      const p0 = route.points[0];
-      const p1 = route.points[Math.min(3, route.points.length - 1)];
+      // Якорь в координатах здания: ручная фиксация или старт маршрута
+      let p0 = route.points[0];
+      if (userPosition) {
+        p0 = userPosition;
+      } else if (startRoom) {
+        const startNode = graph.getNode(startRoom.nodeId);
+        if (startNode) p0 = startNode.position;
+      }
+
+      let p1 = route.points[Math.min(1, route.points.length - 1)];
+      for (let i = 0; i < route.points.length - 1; i++) {
+        if (distance(route.points[i], p0) < 1.2) {
+          p1 = route.points[i + 1];
+          break;
+        }
+      }
+
       const routeDir = new THREE.Vector3(p1.x - p0.x, 0, p1.z - p0.z).normalize();
+      const theta =
+        Math.atan2(forward.x, forward.z) - Math.atan2(routeDir.x, routeDir.z);
+      baseThetaRef.current = theta;
+      const totalYaw = theta + calibrationHeadingOffset;
 
-      // Угол поворота: маршрут «стартует» в направлении взгляда
-      const theta = Math.atan2(forward.x, forward.z) - Math.atan2(routeDir.x, routeDir.z);
-
-      group.rotation.set(0, theta, 0);
+      group.rotation.set(0, totalYaw, 0);
       const startWorld = new THREE.Vector3(p0.x, p0.y, p0.z).applyAxisAngle(
         new THREE.Vector3(0, 1, 0),
-        theta,
+        totalYaw,
       );
       group.position.copy(hitPoint).sub(startWorld);
       group.visible = true;
@@ -190,8 +216,15 @@ function ARWorld({
       calibratedRef.current = true;
       onStateChange('tracking');
     },
-    [route, gl, onStateChange],
+    [route, gl, onStateChange, userPosition, startRoom, graph, calibrationHeadingOffset],
   );
+
+  useEffect(() => {
+    if (calibratedRef.current && anchorGroupRef.current) {
+      anchorGroupRef.current.rotation.y =
+        baseThetaRef.current + calibrationHeadingOffset;
+    }
+  }, [calibrationHeadingOffset]);
 
   // Обработка тапа (XR select) — калибровка по текущему ретиклу.
   useEffect(() => {
@@ -283,13 +316,13 @@ function ARWorld({
     }
   });
 
-  // Сброс калибровки при смене маршрута
+  // Сброс калибровки при смене маршрута или явном сбросе
   useEffect(() => {
     calibratedRef.current = false;
     anchorRef.current = null;
     if (anchorGroupRef.current) anchorGroupRef.current.visible = false;
     onStateChange('scanning-floor');
-  }, [route, onStateChange]);
+  }, [route, calibrationGeneration, onStateChange]);
 
   const ringColor = useMemo(() => new THREE.Color(routeColor), [routeColor]);
   void userFloor;

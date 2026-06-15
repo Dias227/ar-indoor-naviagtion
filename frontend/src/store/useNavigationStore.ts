@@ -35,6 +35,7 @@ import { StorageKeys, loadJSON, removeKey, saveJSON } from '@/services/storage';
 
 /** Расстояние от маршрута (м), после которого запускается пересчёт. */
 const REROUTE_THRESHOLD = 3.5;
+const DEG2RAD = Math.PI / 180;
 
 const persistedEdit = loadJSON<BuildingData | null>(
   StorageKeys.editedBuilding,
@@ -61,6 +62,11 @@ interface NavigationState {
   arrived: boolean;
   lastFix: PositionFix | null;
 
+  /** Доп. поворот AR-маршрута после калибровки (рад). */
+  calibrationHeadingOffset: number;
+  /** Инкремент сбрасывает AR-калибровку в ARScene. */
+  calibrationGeneration: number;
+
   cloudConfigured: boolean;
   cloudSyncStatus: CloudSyncStatus;
   cloudLastSyncedAt: number | null;
@@ -77,6 +83,12 @@ interface NavigationState {
   clearRoute: () => void;
   updateUserPosition: (pos: Vec3, heading?: number) => void;
   applyPositionFix: (fix: PositionFix) => void;
+  /** Ручная привязка к помещению (2D-карта + пересчёт маршрута). */
+  setPositionAtRoom: (roomId: string) => void;
+  /** Поворот AR-маршрута влево/вправо (градусы). */
+  adjustCalibrationHeading: (deltaDeg: number) => void;
+  /** Сброс AR-калибровки (нужно снова тапнуть пол). */
+  resetARCalibration: () => void;
   swapPoints: () => void;
 }
 
@@ -101,6 +113,9 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   currentStep: null,
   arrived: false,
   lastFix: null,
+
+  calibrationHeadingOffset: 0,
+  calibrationGeneration: 0,
 
   cloudConfigured: cloudConfigured(),
   cloudSyncStatus: cloudConfigured() ? 'idle' : 'offline',
@@ -368,5 +383,35 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       }
     }
     set(patch);
+  },
+
+  setPositionAtRoom: (roomId) => {
+    const { buildingData, graph } = get();
+    const room = buildingData.rooms.find((r) => r.id === roomId);
+    if (!room) return;
+    const node = graph.getNode(room.nodeId);
+    if (!node) return;
+    get().applyPositionFix({
+      nodeId: node.id,
+      position: { ...node.position },
+      floor: node.floor,
+      source: 'manual',
+      timestamp: Date.now(),
+    });
+    get().resetARCalibration();
+  },
+
+  adjustCalibrationHeading: (deltaDeg) => {
+    set({
+      calibrationHeadingOffset:
+        get().calibrationHeadingOffset + DEG2RAD * deltaDeg,
+    });
+  },
+
+  resetARCalibration: () => {
+    set({
+      calibrationGeneration: get().calibrationGeneration + 1,
+      calibrationHeadingOffset: 0,
+    });
   },
 }));

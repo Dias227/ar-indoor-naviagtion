@@ -22,6 +22,7 @@ import { isImmersiveARSupported } from '@/ar/webxr';
 import { ARScene } from '@/ar/ARScene';
 import { FallbackAR, type FallbackARHandle } from '@/ar/FallbackAR';
 import { Minimap } from '@/components/Minimap';
+import { LocationFixBar } from '@/components/LocationFixBar';
 import { NeonButton } from '@/components/NeonButton';
 
 export function ARNavigationPage() {
@@ -32,6 +33,10 @@ export function ARNavigationPage() {
   const currentStep = useNavigationStore((s) => s.currentStep);
   const progress = useNavigationStore((s) => s.progress);
   const arrived = useNavigationStore((s) => s.arrived);
+  const adjustCalibrationHeading = useNavigationStore(
+    (s) => s.adjustCalibrationHeading,
+  );
+  const resetARCalibration = useNavigationStore((s) => s.resetARCalibration);
   const { voiceEnabled, showMinimap, update } = useSettingsStore();
 
   const [xrSupported, setXrSupported] = useState<boolean | null>(null);
@@ -101,7 +106,8 @@ export function ARNavigationPage() {
           <AnimatePresence mode="wait">
             {arState === 'scanning-floor' && (
               <Banner key="scan" color="text-neon">
-                Наведите камеру на пол и коснитесь экрана, чтобы привязать маршрут
+                Сначала «📍 Где я?» — укажите помещение. Затем наведите на пол и
+                коснитесь экрана для привязки маршрута
               </Banner>
             )}
             {arState === 'requesting' && (
@@ -130,6 +136,30 @@ export function ARNavigationPage() {
           <div className="mx-auto mt-2 w-fit rounded-full border border-white/10 bg-black/50 px-4 py-1.5 text-xs text-white/70 backdrop-blur-md">
             {startRoom?.name} → <span className="text-neon">{endRoom?.name}</span>
           </div>
+        </div>
+
+        {/* Левый верх: где я + поворот маршрута */}
+        <div className="absolute left-3 top-24 pointer-events-auto flex flex-col gap-2">
+          <LocationFixBar compact />
+          {usingXR && (arState === 'tracking' || arState === 'scanning-floor') && (
+            <div className="flex gap-1.5">
+              <HeadingBtn
+                label="Повернуть влево"
+                onClick={() => adjustCalibrationHeading(-15)}
+              >
+                ↺
+              </HeadingBtn>
+              <HeadingBtn label="Сброс AR" onClick={() => resetARCalibration()}>
+                ⟲
+              </HeadingBtn>
+              <HeadingBtn
+                label="Повернуть вправо"
+                onClick={() => adjustCalibrationHeading(15)}
+              >
+                ↻
+              </HeadingBtn>
+            </div>
+          )}
         </div>
 
         {/* Правый верх: миникарта */}
@@ -269,6 +299,27 @@ function Banner({ children, color }: { children: React.ReactNode; color: string 
     >
       {children}
     </motion.div>
+  );
+}
+
+/** Круглая кнопка поворота AR-маршрута. */
+function HeadingBtn({
+  children,
+  onClick,
+  label,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/60 text-lg backdrop-blur-md active:scale-90"
+    >
+      {children}
+    </button>
   );
 }
 
