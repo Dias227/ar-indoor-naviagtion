@@ -197,8 +197,14 @@ export function routeProgress(
 
 /** Текущая/следующая инструкция для позиции пользователя. */
 export function nextStep(route: RouteResult, travelled: number): RouteStep | null {
+  const nearDest = travelled >= route.totalDistance - 2.5;
   for (const step of route.steps) {
+    if (step.maneuver === 'arrive') {
+      if (nearDest) return step;
+      continue;
+    }
     if (step.cumulativeDistance > travelled + 0.5) return step;
   }
-  return route.steps[route.steps.length - 1] ?? null;
+  const fallback = route.steps.find((s) => s.maneuver !== 'arrive');
+  return fallback ?? route.steps[0] ?? null;
 }

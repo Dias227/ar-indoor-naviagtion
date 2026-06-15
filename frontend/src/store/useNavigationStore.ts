@@ -297,9 +297,10 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     if (!route) return false;
 
     const startNode = graph.getNode(startRoom.nodeId)!;
+    const snapped = graph.snapToGraph(startNode.position, startNode.floor);
     set({
       route,
-      userPosition: { ...startNode.position },
+      userPosition: snapped ? snapped.position : { ...startNode.position },
       userFloor: startNode.floor,
       progress: { fraction: 0, travelled: 0, remaining: route.totalDistance },
       currentStep: route.steps[0] ?? null,
@@ -318,11 +319,13 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
 
   updateUserPosition: (pos, heading) => {
     const { route, graph, endRoom, userFloor } = get();
-    const patch: Partial<NavigationState> = { userPosition: pos };
+    const snapped = graph.snapToGraph(pos, userFloor);
+    const aligned = snapped ? snapped.position : pos;
+    const patch: Partial<NavigationState> = { userPosition: aligned };
     if (heading !== undefined) patch.userHeading = heading;
 
     if (route) {
-      const prog = routeProgress(route, pos);
+      const prog = routeProgress(route, aligned);
       patch.progress = {
         fraction: prog.fraction,
         travelled: prog.travelled,
@@ -331,16 +334,24 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       patch.currentStep = nextStep(route, prog.travelled);
 
       const goal = route.points[route.points.length - 1];
-      if (distance(pos, goal) < 1.5) {
+      if (
+        distance(aligned, goal) < 2 &&
+        prog.fraction > 0.88 &&
+        prog.remaining < 3
+      ) {
         patch.arrived = true;
       }
 
       const nearest = route.points[prog.nearestIndex];
-      if (distance(pos, nearest) > REROUTE_THRESHOLD && endRoom) {
-        const startNode = graph.nearestNode(pos, userFloor);
+      if (distance(aligned, nearest) > REROUTE_THRESHOLD && endRoom) {
+        const startNode = graph.nearestNode(aligned, userFloor);
         if (startNode) {
           const newRoute = buildRoute(graph, startNode.id, endRoom.nodeId);
-          if (newRoute) {
+          // Отсекаем «скачок» маршрута при ошибочной AR-позиции
+          if (
+            newRoute &&
+            newRoute.totalDistance >= prog.remaining * 0.45
+          ) {
             patch.route = newRoute;
             patch.progress = {
               fraction: 0,
@@ -348,6 +359,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
               remaining: newRoute.totalDistance,
             };
             patch.currentStep = newRoute.steps[0] ?? null;
+            patch.arrived = false;
           }
         }
       }
@@ -358,13 +370,16 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   applyPositionFix: (fix) => {
     const { graph, endRoom } = get();
     const node = graph.getNode(fix.nodeId);
-    const position = node ? { ...node.position } : fix.position;
+    const base = node ? { ...node.position } : fix.position;
+    const snapped = graph.snapToGraph(base, node?.floor ?? fix.floor);
+    const position = snapped ? snapped.position : base;
     const floor = node ? node.floor : fix.floor;
 
     const patch: Partial<NavigationState> = {
       lastFix: fix,
       userPosition: position,
       userFloor: floor,
+      arrived: false,
     };
 
     if (endRoom) {

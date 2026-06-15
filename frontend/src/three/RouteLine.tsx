@@ -33,14 +33,18 @@ interface RouteLineProps {
   showParticles?: boolean;
 }
 
-/** Построение сглаженной кривой по точкам маршрута. */
+/** Построение кривой строго по рёбрам графа (без CatmullRom — он «резает» углы через стены). */
 export function useRouteCurve(route: RouteResult, floorOffset = 0.06) {
   return useMemo(() => {
     const pts = route.points.map(
       (p) => new THREE.Vector3(p.x, p.y + floorOffset, p.z),
     );
     if (pts.length < 2) return null;
-    return new THREE.CatmullRomCurve3(pts, false, 'centripetal', 0.35);
+    const path = new THREE.CurvePath<THREE.Vector3>();
+    for (let i = 0; i < pts.length - 1; i++) {
+      path.add(new THREE.LineCurve3(pts[i], pts[i + 1]));
+    }
+    return path;
   }, [route, floorOffset]);
 }
 
