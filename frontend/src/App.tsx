@@ -30,6 +30,9 @@ const SettingsPage = lazy(() =>
 const AdminPage = lazy(() =>
   import('@/pages/AdminPage').then((m) => ({ default: m.AdminPage })),
 );
+const ARMapPage = lazy(() =>
+  import('@/pages/ARMapPage').then((m) => ({ default: m.ARMapPage })),
+);
 const AboutPage = lazy(() =>
   import('@/pages/AboutPage').then((m) => ({ default: m.AboutPage })),
 );
@@ -60,6 +63,7 @@ export default function App() {
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/ar-map" element={<ARMapPage />} />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
       </Suspense>

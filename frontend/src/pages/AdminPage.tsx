@@ -11,8 +11,9 @@
  * Все изменения применяются локально мгновенно (офлайн-first) и
  * отправляются на backend (FastAPI → Firestore) в фоне.
  */
-import { Suspense, useMemo, useState } from 'react';
-import type { Floor, NavEdge, NavNode, Room, Vec3 } from '@/types';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { Floor, NavEdge, NavNode, Room, RoomCategory, Vec3 } from '@/types';
 import { PageShell } from '@/components/PageShell';
 import { GlassCard } from '@/components/GlassCard';
 import { NeonButton } from '@/components/NeonButton';
@@ -570,16 +571,33 @@ const NODE_TYPE_OPTIONS: { value: NavNode['type']; label: string }[] = [
   { value: 'marker', label: 'QR-маркер' },
 ];
 
-type EditMode = 'add' | 'select' | 'move' | 'connect';
+const CATEGORY_OPTIONS: RoomCategory[] = [
+  'classroom', 'office', 'service', 'food', 'hall',
+  'entrance', 'library', 'gym', 'other',
+];
+
+type EditMode = 'cabinet' | 'add' | 'select' | 'move' | 'connect';
 
 function Place3DTab({ apply }: { apply: ApplyFn }) {
+  const navigate = useNavigate();
   const data = useNavigationStore((s) => s.buildingData);
   const [floor, setFloor] = useState(1);
-  const [mode, setMode] = useState<EditMode>('add');
+  const [mode, setMode] = useState<EditMode>('cabinet');
   const [nodeType, setNodeType] = useState<NavNode['type']>('waypoint');
   const [selected, setSelected] = useState<string | null>(null);
   const [connectFrom, setConnectFrom] = useState<string | null>(null);
   const [isolate, setIsolate] = useState(true);
+
+  // Автофокус на поле названия сразу после установки кабинета — для
+  // быстрого ввода: клик по двери → печатаем название → клик по следующей.
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const focusNameRef = useRef(false);
+  useEffect(() => {
+    if (focusNameRef.current && nameInputRef.current) {
+      nameInputRef.current.focus();
+      focusNameRef.current = false;
+    }
+  }, [selected]);
 
   const floorMeta = data.building.floors.find((f) => f.level === floor);
   const floorElevation = floorMeta?.elevation ?? 0;
@@ -601,10 +619,43 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
     ? data.edges.filter((e) => e.from === selected || e.to === selected)
     : [];
 
+  const linkedRoom = selectedNode
+    ? data.rooms.find((r) => r.nodeId === selectedNode.id) ?? null
+    : null;
+
   const round = (v: number) => Math.round(v * 10) / 10;
 
   const handleSurface = (p: Vec3) => {
-    if (mode === 'add') {
+    if (mode === 'cabinet') {
+      // Точка-дверь + помещение (POI) одним действием, с автофокусом названия.
+      const node: NavNode = {
+        id: genId('n'),
+        position: { x: round(p.x), y: round(floorElevation), z: round(p.z) },
+        floor,
+        type: 'room',
+        name: '',
+      };
+      const room: Room = {
+        id: genId('r'),
+        name: '',
+        floor,
+        category: 'classroom',
+        nodeId: node.id,
+        isStart: true,
+        isDestination: true,
+        icon: '🏫',
+      };
+      node.roomId = room.id;
+      apply(
+        { nodes: [...data.nodes, node], rooms: [...data.rooms, room] },
+        async () => {
+          await adminSaveNode(data.building.id, node);
+          await adminSaveRoom(data.building.id, room);
+        },
+      );
+      setSelected(node.id);
+      focusNameRef.current = true;
+    } else if (mode === 'add') {
       const node: NavNode = {
         id: genId('n'),
         position: { x: round(p.x), y: round(floorElevation), z: round(p.z) },
@@ -673,12 +724,44 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
     const edges = data.edges.filter(
       (e) => e.from !== selected && e.to !== selected,
     );
+    const roomsToDelete = data.rooms.filter((r) => r.nodeId === selected);
     apply(
-      { nodes: data.nodes.filter((n) => n.id !== selected), edges },
-      () => adminDeleteNode(data.building.id, selected),
+      {
+        nodes: data.nodes.filter((n) => n.id !== selected),
+        edges,
+        rooms: data.rooms.filter((r) => r.nodeId !== selected),
+      },
+      async () => {
+        await adminDeleteNode(data.building.id, selected);
+        for (const r of roomsToDelete) {
+          await adminDeleteRoom(data.building.id, r.id);
+        }
+      },
     );
     setSelected(null);
     setConnectFrom(null);
+  };
+
+  /** Изменить название кабинета (синхронно обновляет имя узла). */
+  const updateRoomName = (room: Room, name: string) => {
+    const updatedRoom = { ...room, name };
+    apply(
+      {
+        rooms: data.rooms.map((r) => (r.id === room.id ? updatedRoom : r)),
+        nodes: data.nodes.map((n) =>
+          n.id === room.nodeId ? { ...n, name } : n,
+        ),
+      },
+      () => adminSaveRoom(data.building.id, updatedRoom),
+    );
+  };
+
+  const updateRoomCategory = (room: Room, category: RoomCategory) => {
+    const updatedRoom = { ...room, category };
+    apply(
+      { rooms: data.rooms.map((r) => (r.id === room.id ? updatedRoom : r)) },
+      () => adminSaveRoom(data.building.id, updatedRoom),
+    );
   };
 
   const deleteEdge = (id: string) => {
@@ -720,6 +803,7 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
   };
 
   const modeButtons: { id: EditMode; label: string }[] = [
+    { id: 'cabinet', label: '🚪 Кабинет' },
     { id: 'add', label: '➕ Точка' },
     { id: 'select', label: '👆 Выбрать' },
     { id: 'move', label: '✋ Двигать' },
@@ -727,6 +811,8 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
   ];
 
   const hint: Record<EditMode, string> = {
+    cabinet:
+      'Кликни у двери кабинета на модели — он появится, сразу впиши название и жми дальше.',
     add: 'Кликни по полу модели — добавится точка выбранного типа.',
     select: 'Кликни по точке, чтобы изменить её свойства.',
     move: 'Выбери точку, затем кликни по новому месту на полу.',
@@ -735,6 +821,10 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
 
   return (
     <div className="flex flex-col gap-3">
+      <NeonButton full variant="ghost" onClick={() => navigate('/ar-map')}>
+        📷 Размечать кабинеты в AR-камере (Android)
+      </NeonButton>
+
       <GlassCard className="flex flex-col gap-2.5 p-3">
         <div className="flex flex-wrap items-center gap-2">
           <select
@@ -801,7 +891,7 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
       </p>
 
       <GlassCard className="overflow-hidden p-0">
-        <div className="h-[420px] w-full">
+        <div className="relative h-[420px] w-full">
           <Suspense
             fallback={
               <div className="flex h-full items-center justify-center text-sm text-white/40">
@@ -821,6 +911,29 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
               onPickNode={handleNode}
             />
           </Suspense>
+
+          {/* Быстрый ввод названия только что поставленного кабинета */}
+          {mode === 'cabinet' && linkedRoom && (
+            <div className="absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-xl border border-neon/40 bg-black/75 p-2 backdrop-blur-md">
+              <span className="pl-1 text-lg">🚪</span>
+              <input
+                ref={nameInputRef}
+                className="admin-input flex-1"
+                value={linkedRoom.name}
+                placeholder="Название кабинета (напр. 205) и далее →"
+                onChange={(e) => updateRoomName(linkedRoom, e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                }}
+              />
+              <button
+                onClick={() => setSelected(null)}
+                className="rounded-lg bg-neon/20 px-3 py-2 text-sm font-semibold text-neon"
+              >
+                ✓
+              </button>
+            </div>
+          )}
         </div>
       </GlassCard>
 
@@ -835,36 +948,67 @@ function Place3DTab({ apply }: { apply: ApplyFn }) {
               Удалить точку
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Название">
-              <input
-                className="admin-input"
-                value={selectedNode.name ?? ''}
-                placeholder="напр. Кабинет 205"
-                onChange={(e) =>
-                  updateSelected({ ...selectedNode, name: e.target.value })
-                }
-              />
-            </Field>
-            <Field label="Тип точки">
-              <select
-                className="admin-input"
-                value={selectedNode.type}
-                onChange={(e) =>
-                  updateSelected({
-                    ...selectedNode,
-                    type: e.target.value as NavNode['type'],
-                  })
-                }
-              >
-                {NODE_TYPE_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
+          {linkedRoom ? (
+            <>
+              <Field label="Название кабинета / помещения">
+                <input
+                  className="admin-input"
+                  value={linkedRoom.name}
+                  placeholder="напр. Кабинет 205"
+                  onChange={(e) => updateRoomName(linkedRoom, e.target.value)}
+                />
+              </Field>
+              <Field label="Категория">
+                <select
+                  className="admin-input"
+                  value={linkedRoom.category}
+                  onChange={(e) =>
+                    updateRoomCategory(
+                      linkedRoom,
+                      e.target.value as RoomCategory,
+                    )
+                  }
+                >
+                  {CATEGORY_OPTIONS.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Название">
+                <input
+                  className="admin-input"
+                  value={selectedNode.name ?? ''}
+                  placeholder="напр. Холл"
+                  onChange={(e) =>
+                    updateSelected({ ...selectedNode, name: e.target.value })
+                  }
+                />
+              </Field>
+              <Field label="Тип точки">
+                <select
+                  className="admin-input"
+                  value={selectedNode.type}
+                  onChange={(e) =>
+                    updateSelected({
+                      ...selectedNode,
+                      type: e.target.value as NavNode['type'],
+                    })
+                  }
+                >
+                  {NODE_TYPE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-2">
             {(['x', 'y', 'z'] as const).map((axis) => (
               <Field key={axis} label={axis.toUpperCase()}>
