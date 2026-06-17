@@ -24,7 +24,7 @@ SKIP_MARKER_NAMES = frozenset({'Пустышка', 'Плоскость', 'Сфе
 BUILDING_ROOT_NAMES = frozenset({'College_Floor1'})
 # Версия данных: увеличивайте при перегенерации, чтобы приложение
 # принудительно заменило устаревшие облачные/локальные данные.
-DATA_VERSION = 2
+DATA_VERSION = 5
 GRID_STEP = 0.75
 PATH_LINK_MAX = 6.0
 PATH_SIMPLIFY_MIN = 1.0
@@ -181,30 +181,73 @@ def build_path_edges(
     path_nodes: list[tuple[str, tuple[float, float, float]]],
     start_hint: tuple[float, float, float] | None = None,
 ) -> list[tuple[str, str]]:
-    """Минимальное остовное дерево по точкам полоски маршрута."""
+    """Граф соседства по точкам полоски коридора.
+
+    Каждая точка соединяется с соседями в небольшом радиусе — сеть
+    повторяет форму коридоров без длинных косых перескоков (в отличие
+    от MST/жадной цепочки). Затем отдельные компоненты «сшиваются»
+    кратчайшими мостами, чтобы граф был связным.
+    """
     if len(path_nodes) < 2:
         return []
     ids = [nid for nid, _ in path_nodes]
     pos = {nid: p for nid, p in path_nodes}
-    root = ids[0]
-    if start_hint is not None:
-        root = min(ids, key=lambda i: dist(pos[i], start_hint))
-    in_tree = {root}
-    edges: list[tuple[str, str]] = []
-    while len(in_tree) < len(ids):
-        best: tuple[float, str, str] | None = None
-        for a in in_tree:
-            for b in ids:
-                if b in in_tree:
+    NEIGHBOR_RADIUS = 3.5
+
+    edge_set: set[tuple[str, str]] = set()
+    for i, a in enumerate(ids):
+        for b in ids[i + 1 :]:
+            if dist(pos[a], pos[b]) <= NEIGHBOR_RADIUS:
+                edge_set.add((a, b))
+
+    # Гарантируем минимум одно соединение у каждой точки (ближайший сосед).
+    for a in ids:
+        if not any(a in e for e in edge_set):
+            nearest = min((i for i in ids if i != a), key=lambda i: dist(pos[a], pos[i]))
+            edge_set.add(tuple(sorted((a, nearest))))
+
+    # Находим компоненты связности и сшиваем их кратчайшими мостами.
+    adj: dict[str, set[str]] = {i: set() for i in ids}
+    for a, b in edge_set:
+        adj[a].add(b)
+        adj[b].add(a)
+
+    def components() -> list[set[str]]:
+        seen: set[str] = set()
+        comps: list[set[str]] = []
+        for s in ids:
+            if s in seen:
+                continue
+            comp: set[str] = set()
+            stack = [s]
+            while stack:
+                c = stack.pop()
+                if c in comp:
                     continue
-                d = dist(pos[a], pos[b])
-                if best is None or d < best[0]:
-                    best = (d, a, b)
+                comp.add(c)
+                seen.add(c)
+                stack.extend(adj[c] - comp)
+            comps.append(comp)
+        return comps
+
+    comps = components()
+    while len(comps) > 1:
+        base = comps[0]
+        best: tuple[float, str, str] | None = None
+        for other in comps[1:]:
+            for a in base:
+                for b in other:
+                    d = dist(pos[a], pos[b])
+                    if best is None or d < best[0]:
+                        best = (d, a, b)
         assert best is not None
         _, a, b = best
-        edges.append((a, b))
-        in_tree.add(b)
-    return edges
+        edge_set.add(tuple(sorted((a, b))))
+        adj[a].add(b)
+        adj[b].add(a)
+        comps = components()
+
+    return sorted(edge_set)
 
 
 def collect_poi_markers(data: dict, bin_data: bytes) -> list[tuple[str, tuple[float, float, float]]]:
@@ -237,6 +280,48 @@ def collect_poi_markers(data: dict, bin_data: bytes) -> list[tuple[str, tuple[fl
     return markers
 
 
+def densify_path(
+    path_nodes: list[tuple[str, tuple[float, float, float]]],
+    path_edges: list[tuple[str, str]],
+    max_seg: float = 2.0,
+) -> tuple[list[tuple[str, tuple[float, float, float]]], list[tuple[str, str]]]:
+    """Разбивает длинные рёбра-«мосты» на короткие сегменты с новыми точками.
+
+    Разрывы в нарисованной полоске соединяются не одной длинной косой
+    линией, а цепочкой промежуточных точек вдоль прямой — путь выглядит
+    ровно и в камере, и на 2D-карте.
+    """
+    pos = {nid: p for nid, p in path_nodes}
+    out_nodes = list(path_nodes)
+    out_edges: list[tuple[str, str]] = []
+    counter = len(path_nodes)
+
+    for a, b in path_edges:
+        pa, pb = pos[a], pos[b]
+        d = dist(pa, pb)
+        if d <= max_seg:
+            out_edges.append((a, b))
+            continue
+        steps = int(math.ceil(d / max_seg))
+        prev = a
+        for s in range(1, steps):
+            t = s / steps
+            mid = (
+                pa[0] + (pb[0] - pa[0]) * t,
+                pa[1] + (pb[1] - pa[1]) * t,
+                pa[2] + (pb[2] - pa[2]) * t,
+            )
+            nid = f'path-fill-{counter:03d}'
+            counter += 1
+            out_nodes.append((nid, mid))
+            pos[nid] = mid
+            out_edges.append((prev, nid))
+            prev = nid
+        out_edges.append((prev, b))
+
+    return out_nodes, out_edges
+
+
 def nearest_path_node(
     pos: tuple[float, float, float],
     path_nodes: list[tuple[str, tuple[float, float, float]]],
@@ -258,6 +343,7 @@ def extract_building_data(glb_path: Path) -> dict:
         None,
     )
     path_edges = build_path_edges(path_nodes, entrance_pos)
+    path_nodes, path_edges = densify_path(path_nodes, path_edges)
 
     nodes: list[dict] = []
     edges: list[dict] = []
