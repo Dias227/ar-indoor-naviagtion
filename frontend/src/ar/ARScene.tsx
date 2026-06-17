@@ -183,8 +183,12 @@ function ARWorld({
       }
 
       const routeDir = new THREE.Vector3(p1.x - p0.x, 0, p1.z - p0.z).normalize();
+      // Поворот вокруг Y в Three (правосторонняя система): R(θ) переводит
+      // направление маршрута во взгляд. Чтобы R(θ)·routeDir = forward,
+      // нужен угол atan2(routeDir) − atan2(forward), иначе маршрут зеркалится
+      // (на карте поворот направо — в камере показывает налево).
       const theta =
-        Math.atan2(forward.x, forward.z) - Math.atan2(routeDir.x, routeDir.z);
+        Math.atan2(routeDir.x, routeDir.z) - Math.atan2(forward.x, forward.z);
       baseThetaRef.current = theta;
       const totalYaw = theta + calibrationHeadingOffset;
 

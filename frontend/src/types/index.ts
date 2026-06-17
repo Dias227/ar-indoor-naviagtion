@@ -95,6 +95,8 @@ export interface Building {
   /** Масштаб модели: метров на единицу модели. */
   metersPerUnit: number;
   floors: Floor[];
+  /** Версия встроенных данных (растёт при перегенерации из GLB). */
+  dataVersion?: number;
 }
 
 /** Полный набор данных здания для навигации. */

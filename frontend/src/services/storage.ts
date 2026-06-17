@@ -15,6 +15,8 @@ export const StorageKeys = {
   editedBuilding: `${PREFIX}edited-building`,
   /** Метка времени последнего сохранения карты (для слияния с облаком). */
   buildingUpdatedAt: `${PREFIX}building-updated-at`,
+  /** Версия встроенных данных здания — для принудительного обновления кэша. */
+  builtinDataVersion: `${PREFIX}builtin-data-version`,
 } as const;
 
 export function loadJSON<T>(key: string, fallback: T): T {

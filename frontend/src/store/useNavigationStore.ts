@@ -124,6 +124,24 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   loadBuildings: async () => {
     set({ cloudSyncStatus: 'syncing' });
 
+    // Принудительное обновление: если встроенные данные новее сохранённых,
+    // стираем устаревший кэш/правки, чтобы показать актуальные кабинеты из GLB.
+    const builtinVersion = collegeBuildingData.building.dataVersion ?? 0;
+    const savedVersion = loadJSON<number>(StorageKeys.builtinDataVersion, 0);
+    if (builtinVersion > savedVersion) {
+      removeKey(StorageKeys.editedBuilding);
+      removeKey(StorageKeys.buildingUpdatedAt);
+      removeKey(StorageKeys.buildingCache);
+      saveJSON(StorageKeys.builtinDataVersion, builtinVersion);
+      set({
+        buildings: [collegeBuildingData],
+        buildingData: collegeBuildingData,
+        graph: makeGraph(collegeBuildingData),
+        cloudSyncStatus: cloudConfigured() ? 'idle' : 'offline',
+      });
+      return;
+    }
+
     if (cloudConfigured()) {
       try {
         const pulled = await pullFromCloud();

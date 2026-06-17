@@ -22,6 +22,9 @@ from pathlib import Path
 
 SKIP_MARKER_NAMES = frozenset({'Пустышка', 'Плоскость', 'Сфера', 'College_Floor1'})
 BUILDING_ROOT_NAMES = frozenset({'College_Floor1'})
+# Версия данных: увеличивайте при перегенерации, чтобы приложение
+# принудительно заменило устаревшие облачные/локальные данные.
+DATA_VERSION = 2
 GRID_STEP = 0.75
 PATH_LINK_MAX = 6.0
 PATH_SIMPLIFY_MIN = 1.0
@@ -341,6 +344,7 @@ def extract_building_data(glb_path: Path) -> dict:
             'description': 'Навигация по 1 этажу — маршрут из Blender (Плоскость + маркеры дверей).',
             'modelUrl': '/models/collehenavnewblender.glb',
             'metersPerUnit': 1,
+            'dataVersion': DATA_VERSION,
             'floors': [
                 {'id': 'f1', 'building': 'college-main', 'level': 1, 'name': '1 этаж', 'elevation': FLOOR1_ELEVATION},
                 {'id': 'f2', 'building': 'college-main', 'level': 2, 'name': '2 этаж', 'elevation': 2.4},
