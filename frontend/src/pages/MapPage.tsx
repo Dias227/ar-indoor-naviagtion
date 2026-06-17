@@ -2,7 +2,7 @@
  * Страница карты: 3D-вид здания (x-ray) с NFS-маршрутом + 2D-миникарта,
  * пошаговый список инструкций и симуляция прохождения.
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageShell } from '@/components/PageShell';
 import { GlassCard } from '@/components/GlassCard';
@@ -26,6 +26,17 @@ export function MapPage() {
   const { addFavorite, isFavorite } = useHistoryStore();
 
   useRouteVoiceAnnouncements();
+
+  // Автозапуск анимации пути при открытии карты — пользователю ничего нажимать
+  // не нужно: стрелка сразу едет по маршруту от старта к кабинету.
+  const autoStartedRef = useRef(false);
+  useEffect(() => {
+    if (route && !autoStartedRef.current) {
+      autoStartedRef.current = true;
+      const t = setTimeout(() => sim.start(), 600);
+      return () => clearTimeout(t);
+    }
+  }, [route, sim]);
 
   if (!route || !startRoom || !endRoom) {
     return (
@@ -68,6 +79,24 @@ export function MapPage() {
         </button>
       }
     >
+      {/* Куда идём: крупная карточка кабинета назначения */}
+      <GlassCard className="mb-4 flex items-center gap-4 border-neon/40 p-4 shadow-neon">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-neon/15 text-3xl">
+          {endRoom.icon ?? '🚩'}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] uppercase tracking-wider text-white/45">
+            Идём в
+          </p>
+          <p className="truncate font-display text-xl font-bold text-neon">
+            {endRoom.name}
+          </p>
+          <p className="truncate text-xs text-white/50">
+            {endRoom.floor} этаж · {route.totalDistance.toFixed(0)} м · от «{startRoom.name}»
+          </p>
+        </div>
+      </GlassCard>
+
       {/* Переключатель вида */}
       <div className="glass mb-4 flex p-1">
         {(['3d', '2d'] as const).map((v) => (
@@ -119,9 +148,16 @@ export function MapPage() {
           className="py-4 text-base"
           onClick={() => (sim.playing ? sim.pause() : sim.start())}
         >
-          {sim.playing ? '⏸ Пауза' : '▶ Показать путь'}
+          {sim.playing ? '⏸ Пауза' : '▶ Показать путь снова'}
         </NeonButton>
-        <NeonButton variant="ghost" onClick={sim.reset} className="px-5">
+        <NeonButton
+          variant="ghost"
+          onClick={() => {
+            sim.reset();
+            sim.start();
+          }}
+          className="px-5"
+        >
           ⟲ Сначала
         </NeonButton>
       </div>
