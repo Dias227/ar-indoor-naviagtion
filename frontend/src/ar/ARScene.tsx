@@ -190,13 +190,22 @@ function ARWorld({
 
       const routeDir = new THREE.Vector3(p1.x - p0.x, 0, p1.z - p0.z).normalize();
       // Поворот вокруг Y в Three (правосторонняя система): R(θ) переводит
-      // направление маршрута во взгляд. Чтобы R(θ)·routeDir = forward,
-      // нужен угол atan2(routeDir) − atan2(forward), иначе маршрут зеркалится
-      // (на карте поворот направо — в камере показывает налево).
+      // направление маршрута во взгляд. Для согласованности используем +
+      // (а не вычитание), так как heading вычисляется как + при отслеживании.
       const theta =
-        Math.atan2(routeDir.x, routeDir.z) - Math.atan2(forward.x, forward.z);
+        Math.atan2(forward.x, forward.z) - Math.atan2(routeDir.x, routeDir.z);
       baseThetaRef.current = theta;
       const totalYaw = theta + calibrationHeadingOffset;
+
+      // DEBUG: логирование калибровки
+      console.log('[AR Calibration Debug]', {
+        hitPoint: { x: hitPoint.x.toFixed(2), y: hitPoint.y.toFixed(2), z: hitPoint.z.toFixed(2) },
+        routeStart: { x: p0.x.toFixed(2), y: p0.y.toFixed(2), z: p0.z.toFixed(2) },
+        routeDir: { x: routeDir.x.toFixed(2), z: routeDir.z.toFixed(2), angle: Math.atan2(routeDir.x, routeDir.z).toFixed(2) },
+        forward: { x: forward.x.toFixed(2), z: forward.z.toFixed(2), angle: Math.atan2(forward.x, forward.z).toFixed(2) },
+        theta: (theta * 180 / Math.PI).toFixed(1) + '°',
+        totalYaw: (totalYaw * 180 / Math.PI).toFixed(1) + '°',
+      });
 
       group.rotation.set(0, totalYaw, 0);
       const startWorld = new THREE.Vector3(p0.x, p0.y, p0.z).applyAxisAngle(
@@ -253,12 +262,14 @@ function ARWorld({
           .setY(0)
           .normalize()
           .multiplyScalar(2);
-        calibrate(camPos.add(fwd).setY(0), frame ?? undefined);
+        // Используем высоту пола из маршрута (где начинается путь)
+        const floorY = route ? route.points[0].y : 0;
+        calibrate(camPos.add(fwd).setY(floorY), frame ?? undefined);
       }
     };
     session.addEventListener('select', onSelect);
     return () => session.removeEventListener('select', onSelect);
-  }, [session, gl, calibrate]);
+  }, [session, gl, calibrate, route]);
 
   // Покадровый цикл: hit-test до калибровки, трекинг позы после.
   useFrame((state, _delta, frame: XRFrame | undefined) => {
@@ -315,11 +326,24 @@ function ARWorld({
         const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camQuat).setY(0);
         const heading = Math.atan2(fwd.x, fwd.z) - anchorGroupRef.current.rotation.y;
 
-        const floorElevation = route
-          ? route.points[0].y
-          : -EYE_HEIGHT;
+        // Вычисляем Y-координату: камера находится на высоте EYE_HEIGHT над полом.
+        // local.y даёт высоту камеры в координатах здания. Вычитаем EYE_HEIGHT,
+        // чтобы получить положение пользователя на полу (не в центре головы).
+        const userFloorPos = local.y - EYE_HEIGHT;
+        
+        // DEBUG: логирование позиции пользователя
+        if (Math.random() < 0.1) { // Логируем 1 раз из 10 обновлений
+          console.log('[AR Position Debug]', {
+            cameraPos: { x: camPos.x.toFixed(2), y: camPos.y.toFixed(2), z: camPos.z.toFixed(2) },
+            local: { x: local.x.toFixed(2), y: local.y.toFixed(2), z: local.z.toFixed(2) },
+            userFloorPos: { x: local.x.toFixed(2), y: userFloorPos.toFixed(2), z: local.z.toFixed(2) },
+            heading: (heading * 180 / Math.PI).toFixed(1) + '°',
+            groupRotation: (anchorGroupRef.current.rotation.y * 180 / Math.PI).toFixed(1) + '°',
+          });
+        }
+        
         updateUserPosition(
-          { x: local.x, y: floorElevation, z: local.z },
+          { x: local.x, y: userFloorPos, z: local.z },
           heading,
         );
       }
