@@ -1,5 +1,5 @@
 /**
- * Загрузка и отображение GLB-модели здания (SampleScene.glb).
+ * Загрузка и отображение GLB-модели здания (collehenavnewblender.glb).
  *
  * Режимы:
  *  - 'solid'  — модель как есть (предпросмотр);
@@ -38,8 +38,8 @@ export function BuildingModel({ url, mode = 'solid', maxVisibleY }: BuildingMode
     clone.traverse((obj) => {
       if (!(obj instanceof THREE.Mesh)) return;
 
-      // Текстовые TMP-метки и служебные ноды Unity скрываем
-      if (obj.name.includes('TMP') || obj.name.includes('Text')) {
+      // Текстовые TMP-метки, служебные ноды Unity и маркеры навигации Blender
+      if (obj.name.includes('TMP') || obj.name.includes('Text') || isNavMarkerMesh(obj.name)) {
         obj.visible = false;
         return;
       }
@@ -80,6 +80,13 @@ export function BuildingModel({ url, mode = 'solid', maxVisibleY }: BuildingMode
   }, [scene, mode, maxVisibleY]);
 
   return <primitive object={prepared} />;
+}
+
+/** Маркеры дверей из Blender (меш-сферы с номерами кабинетов и POI). */
+function isNavMarkerMesh(name: string): boolean {
+  if (name === 'Пустышка' || name === 'Сфера') return true;
+  if (/^\d{1,3}$/.test(name.trim())) return true;
+  return /столов|гардер|спорт|акт|библи|бухгал|кадр|ресеп/i.test(name);
 }
 
 /** Предзагрузка модели (вызывается на странице выбора здания). */

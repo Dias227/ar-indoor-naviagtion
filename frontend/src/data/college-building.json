@@ -1,0 +1,3761 @@
+{
+  "building": {
+    "id": "college-main",
+    "name": "Главный корпус колледжа",
+    "address": "Учебный корпус №1",
+    "description": "Навигация по 1 этажу — маршрут из Blender (Плоскость + маркеры дверей).",
+    "modelUrl": "/models/collehenavnewblender.glb",
+    "metersPerUnit": 1,
+    "floors": [
+      {
+        "id": "f1",
+        "building": "college-main",
+        "level": 1,
+        "name": "1 этаж",
+        "elevation": -1.0
+      },
+      {
+        "id": "f2",
+        "building": "college-main",
+        "level": 2,
+        "name": "2 этаж",
+        "elevation": 2.4
+      },
+      {
+        "id": "f3",
+        "building": "college-main",
+        "level": 3,
+        "name": "3 этаж",
+        "elevation": 5.8
+      },
+      {
+        "id": "f4",
+        "building": "college-main",
+        "level": 4,
+        "name": "4 этаж",
+        "elevation": 9.2
+      }
+    ]
+  },
+  "rooms": [
+    {
+      "id": "r-вход",
+      "name": "Вход",
+      "floor": 1,
+      "category": "entrance",
+      "nodeId": "n-вход",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🚪"
+    },
+    {
+      "id": "r-гардероб",
+      "name": "Гардероб",
+      "floor": 1,
+      "category": "service",
+      "nodeId": "n-гардероб",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🧥"
+    },
+    {
+      "id": "r-101",
+      "name": "Кабинет 101",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-101",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-102",
+      "name": "Кабинет 102",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-102",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-103",
+      "name": "Кабинет 103",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-103",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-104",
+      "name": "Кабинет 104",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-104",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-105",
+      "name": "Кабинет 105",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-105",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-106",
+      "name": "Кабинет 106",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-106",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-107",
+      "name": "Кабинет 107",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-107",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-108",
+      "name": "Кабинет 108",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-108",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-11",
+      "name": "Кабинет 11",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-11",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-110",
+      "name": "Кабинет 110",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-110",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-111",
+      "name": "Кабинет 111",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-111",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-112",
+      "name": "Кабинет 112",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-112",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-113",
+      "name": "Кабинет 113",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-113",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-114",
+      "name": "Кабинет 114",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-114",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-115",
+      "name": "Кабинет 115",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-115",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-116",
+      "name": "Кабинет 116",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-116",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-117",
+      "name": "Кабинет 117",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-117",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-118",
+      "name": "Кабинет 118",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-118",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-119",
+      "name": "Кабинет 119",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-119",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-12",
+      "name": "Кабинет 12",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-12",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-120",
+      "name": "Кабинет 120",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-120",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-121",
+      "name": "Кабинет 121",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-121",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-122",
+      "name": "Кабинет 122",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-122",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-123",
+      "name": "Кабинет 123",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-123",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-124",
+      "name": "Кабинет 124",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-124",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-125",
+      "name": "Кабинет 125",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-125",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-126",
+      "name": "Кабинет 126",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-126",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-129",
+      "name": "Кабинет 129",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-129",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-13",
+      "name": "Кабинет 13",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-13",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-130",
+      "name": "Кабинет 130",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-130",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-131",
+      "name": "Кабинет 131",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-131",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-132",
+      "name": "Кабинет 132",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-132",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-133",
+      "name": "Кабинет 133",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-133",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-134",
+      "name": "Кабинет 134",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-134",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-135",
+      "name": "Кабинет 135",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-135",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-138",
+      "name": "Кабинет 138",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-138",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-139",
+      "name": "Кабинет 139",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-139",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-14",
+      "name": "Кабинет 14",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-14",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-140",
+      "name": "Кабинет 140",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-140",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-141",
+      "name": "Кабинет 141",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-141",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-142",
+      "name": "Кабинет 142",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-142",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-143",
+      "name": "Кабинет 143",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-143",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-144",
+      "name": "Кабинет 144",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-144",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-15",
+      "name": "Кабинет 15",
+      "floor": 1,
+      "category": "classroom",
+      "nodeId": "n-15",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏫"
+    },
+    {
+      "id": "r-спортзал-1",
+      "name": "Спортзал 1",
+      "floor": 1,
+      "category": "gym",
+      "nodeId": "n-спортзал-1",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏀"
+    },
+    {
+      "id": "r-спортзал-2",
+      "name": "Спортзал 2",
+      "floor": 1,
+      "category": "gym",
+      "nodeId": "n-спортзал-2",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏀"
+    },
+    {
+      "id": "r-столовая-1",
+      "name": "Столовая 1",
+      "floor": 1,
+      "category": "food",
+      "nodeId": "n-столовая-1",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🍽️"
+    },
+    {
+      "id": "r-столовая-2",
+      "name": "Столовая 2",
+      "floor": 1,
+      "category": "food",
+      "nodeId": "n-столовая-2",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🍽️"
+    },
+    {
+      "id": "r-спорт-зал",
+      "name": "спорт зал",
+      "floor": 1,
+      "category": "gym",
+      "nodeId": "n-спорт-зал",
+      "isStart": true,
+      "isDestination": true,
+      "icon": "🏀"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "path-000",
+      "position": {
+        "x": -2.898,
+        "y": -0.847,
+        "z": -34.208
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-001",
+      "position": {
+        "x": 5.124,
+        "y": 0.601,
+        "z": -25.938
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-002",
+      "position": {
+        "x": -12.59,
+        "y": -0.972,
+        "z": -25.919
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-003",
+      "position": {
+        "x": -3.063,
+        "y": -1.177,
+        "z": -25.546
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-004",
+      "position": {
+        "x": -3.077,
+        "y": -0.948,
+        "z": -24.151
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-005",
+      "position": {
+        "x": -12.997,
+        "y": -0.837,
+        "z": -23.203
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-006",
+      "position": {
+        "x": -14.91,
+        "y": -0.843,
+        "z": -23.157
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-007",
+      "position": {
+        "x": -10.765,
+        "y": -0.872,
+        "z": -23.149
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-008",
+      "position": {
+        "x": -16.625,
+        "y": -0.864,
+        "z": -23.115
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-009",
+      "position": {
+        "x": -18.17,
+        "y": -0.883,
+        "z": -23.088
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-010",
+      "position": {
+        "x": -8.158,
+        "y": -1.007,
+        "z": -23.046
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-011",
+      "position": {
+        "x": 7.481,
+        "y": -0.987,
+        "z": -23.0
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-012",
+      "position": {
+        "x": 0.921,
+        "y": -1.022,
+        "z": -22.986
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-013",
+      "position": {
+        "x": 10.015,
+        "y": -1.09,
+        "z": -22.926
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-014",
+      "position": {
+        "x": 11.808,
+        "y": -1.417,
+        "z": -22.747
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-015",
+      "position": {
+        "x": 7.328,
+        "y": -0.377,
+        "z": -21.82
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-016",
+      "position": {
+        "x": -14.91,
+        "y": -0.813,
+        "z": -21.752
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-017",
+      "position": {
+        "x": 9.834,
+        "y": -0.886,
+        "z": -21.707
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-018",
+      "position": {
+        "x": -16.664,
+        "y": -0.827,
+        "z": -21.651
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-019",
+      "position": {
+        "x": -8.12,
+        "y": -1.033,
+        "z": -21.632
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-020",
+      "position": {
+        "x": -10.739,
+        "y": -0.798,
+        "z": -21.579
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-021",
+      "position": {
+        "x": -12.991,
+        "y": -0.785,
+        "z": -21.55
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-022",
+      "position": {
+        "x": -6.672,
+        "y": -1.041,
+        "z": 3.115
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-023",
+      "position": {
+        "x": -8.657,
+        "y": -0.831,
+        "z": 3.37
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-024",
+      "position": {
+        "x": -9.155,
+        "y": -0.812,
+        "z": 4.68
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-025",
+      "position": {
+        "x": -6.736,
+        "y": -1.016,
+        "z": 5.065
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-026",
+      "position": {
+        "x": 1.251,
+        "y": -0.709,
+        "z": 11.414
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-027",
+      "position": {
+        "x": 5.405,
+        "y": -0.785,
+        "z": 11.473
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-028",
+      "position": {
+        "x": -14.071,
+        "y": -1.171,
+        "z": 17.44
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-029",
+      "position": {
+        "x": -10.966,
+        "y": -0.671,
+        "z": 17.591
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-030",
+      "position": {
+        "x": -22.678,
+        "y": -0.761,
+        "z": 18.213
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-031",
+      "position": {
+        "x": -15.575,
+        "y": -0.674,
+        "z": 19.061
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-032",
+      "position": {
+        "x": -13.952,
+        "y": -0.832,
+        "z": 19.064
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-033",
+      "position": {
+        "x": -10.972,
+        "y": -0.722,
+        "z": 19.067
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-034",
+      "position": {
+        "x": -9.045,
+        "y": -0.855,
+        "z": 19.109
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-035",
+      "position": {
+        "x": -19.347,
+        "y": -0.67,
+        "z": 19.119
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-036",
+      "position": {
+        "x": -22.715,
+        "y": -0.796,
+        "z": 19.285
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-037",
+      "position": {
+        "x": 1.522,
+        "y": -1.268,
+        "z": 19.686
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-038",
+      "position": {
+        "x": 3.658,
+        "y": -1.548,
+        "z": 19.747
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-039",
+      "position": {
+        "x": -19.457,
+        "y": -0.803,
+        "z": 20.475
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-040",
+      "position": {
+        "x": -22.708,
+        "y": -0.803,
+        "z": 20.507
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-041",
+      "position": {
+        "x": 1.669,
+        "y": -1.159,
+        "z": 21.375
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-042",
+      "position": {
+        "x": -0.745,
+        "y": -1.066,
+        "z": 21.587
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-043",
+      "position": {
+        "x": 1.216,
+        "y": -1.728,
+        "z": 22.627
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-044",
+      "position": {
+        "x": -11.944,
+        "y": -0.443,
+        "z": 24.884
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-045",
+      "position": {
+        "x": -10.68,
+        "y": -0.933,
+        "z": 25.37
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-046",
+      "position": {
+        "x": -15.738,
+        "y": -0.785,
+        "z": 25.563
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-047",
+      "position": {
+        "x": 3.572,
+        "y": -1.212,
+        "z": 26.796
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-048",
+      "position": {
+        "x": -15.796,
+        "y": -0.745,
+        "z": 30.0
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-049",
+      "position": {
+        "x": -18.866,
+        "y": -0.745,
+        "z": 30.0
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-050",
+      "position": {
+        "x": -15.889,
+        "y": -0.738,
+        "z": 33.694
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-051",
+      "position": {
+        "x": -19.539,
+        "y": -0.733,
+        "z": 33.698
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-052",
+      "position": {
+        "x": -18.981,
+        "y": -0.725,
+        "z": 36.192
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-053",
+      "position": {
+        "x": -15.889,
+        "y": -0.738,
+        "z": 36.283
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-054",
+      "position": {
+        "x": -15.883,
+        "y": -0.74,
+        "z": 37.369
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-055",
+      "position": {
+        "x": -12.845,
+        "y": -0.667,
+        "z": 37.4
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-056",
+      "position": {
+        "x": -19.289,
+        "y": -0.783,
+        "z": 42.205
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-057",
+      "position": {
+        "x": -16.032,
+        "y": -0.755,
+        "z": 42.21
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-058",
+      "position": {
+        "x": -19.565,
+        "y": -0.87,
+        "z": 45.337
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-059",
+      "position": {
+        "x": -17.332,
+        "y": -0.749,
+        "z": 45.553
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-060",
+      "position": {
+        "x": -19.521,
+        "y": -0.823,
+        "z": 48.355
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-061",
+      "position": {
+        "x": -17.286,
+        "y": -0.629,
+        "z": 48.355
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-062",
+      "position": {
+        "x": -17.4,
+        "y": -0.606,
+        "z": 51.313
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-063",
+      "position": {
+        "x": -19.387,
+        "y": -0.648,
+        "z": 51.358
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-064",
+      "position": {
+        "x": -15.533,
+        "y": -0.711,
+        "z": 51.929
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-065",
+      "position": {
+        "x": -17.446,
+        "y": -0.875,
+        "z": 54.277
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-066",
+      "position": {
+        "x": -19.529,
+        "y": -0.87,
+        "z": 54.284
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-067",
+      "position": {
+        "x": -15.555,
+        "y": -0.909,
+        "z": 55.004
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-068",
+      "position": {
+        "x": -19.706,
+        "y": -0.7,
+        "z": 59.431
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-069",
+      "position": {
+        "x": -17.54,
+        "y": -0.896,
+        "z": 59.503
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-070",
+      "position": {
+        "x": -17.656,
+        "y": -0.82,
+        "z": 64.093
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-071",
+      "position": {
+        "x": -19.616,
+        "y": -0.944,
+        "z": 64.096
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-072",
+      "position": {
+        "x": -15.844,
+        "y": -0.823,
+        "z": 64.124
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-073",
+      "position": {
+        "x": -19.65,
+        "y": -0.849,
+        "z": 70.741
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-074",
+      "position": {
+        "x": -18.098,
+        "y": -0.827,
+        "z": 70.742
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-075",
+      "position": {
+        "x": -18.55,
+        "y": -0.818,
+        "z": 78.981
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-076",
+      "position": {
+        "x": -20.091,
+        "y": -0.665,
+        "z": 79.002
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-077",
+      "position": {
+        "x": -18.92,
+        "y": -0.861,
+        "z": 87.115
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-078",
+      "position": {
+        "x": -20.427,
+        "y": -0.672,
+        "z": 87.124
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-079",
+      "position": {
+        "x": -14.833,
+        "y": -0.822,
+        "z": 88.086
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-080",
+      "position": {
+        "x": -18.949,
+        "y": -0.836,
+        "z": 88.261
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-081",
+      "position": {
+        "x": -19.099,
+        "y": -0.855,
+        "z": 91.041
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-082",
+      "position": {
+        "x": -20.545,
+        "y": -0.752,
+        "z": 91.115
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-083",
+      "position": {
+        "x": -14.847,
+        "y": -0.902,
+        "z": 91.314
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-084",
+      "position": {
+        "x": -33.933,
+        "y": -0.539,
+        "z": 95.562
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-085",
+      "position": {
+        "x": -25.054,
+        "y": -0.553,
+        "z": 95.579
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-086",
+      "position": {
+        "x": -19.085,
+        "y": -0.523,
+        "z": 96.258
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-087",
+      "position": {
+        "x": -14.877,
+        "y": -0.542,
+        "z": 96.308
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-088",
+      "position": {
+        "x": -35.393,
+        "y": -0.662,
+        "z": 97.067
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-089",
+      "position": {
+        "x": -24.974,
+        "y": -0.556,
+        "z": 97.581
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-090",
+      "position": {
+        "x": -20.609,
+        "y": -0.428,
+        "z": 97.733
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-091",
+      "position": {
+        "x": -19.059,
+        "y": -0.448,
+        "z": 97.821
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-092",
+      "position": {
+        "x": -33.871,
+        "y": -0.674,
+        "z": 98.244
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-093",
+      "position": {
+        "x": -36.839,
+        "y": -0.467,
+        "z": 98.61
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-094",
+      "position": {
+        "x": -19.033,
+        "y": -0.506,
+        "z": 98.944
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-095",
+      "position": {
+        "x": -16.478,
+        "y": -0.704,
+        "z": 99.115
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-096",
+      "position": {
+        "x": -34.555,
+        "y": -0.869,
+        "z": 100.39
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-097",
+      "position": {
+        "x": -20.839,
+        "y": -0.58,
+        "z": 100.404
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-098",
+      "position": {
+        "x": -36.944,
+        "y": -0.544,
+        "z": 100.784
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-099",
+      "position": {
+        "x": -16.712,
+        "y": -0.753,
+        "z": 102.064
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-100",
+      "position": {
+        "x": -15.145,
+        "y": -0.384,
+        "z": 102.18
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-101",
+      "position": {
+        "x": -16.851,
+        "y": -0.755,
+        "z": 109.03
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-102",
+      "position": {
+        "x": -15.332,
+        "y": -0.485,
+        "z": 109.053
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-103",
+      "position": {
+        "x": -16.792,
+        "y": -0.7,
+        "z": 111.633
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-104",
+      "position": {
+        "x": -15.04,
+        "y": -0.734,
+        "z": 111.735
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-105",
+      "position": {
+        "x": -18.205,
+        "y": -0.812,
+        "z": 114.938
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-106",
+      "position": {
+        "x": -16.86,
+        "y": -0.788,
+        "z": 114.96
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-107",
+      "position": {
+        "x": -15.298,
+        "y": -1.083,
+        "z": 116.892
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-108",
+      "position": {
+        "x": -16.765,
+        "y": -0.99,
+        "z": 116.987
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-109",
+      "position": {
+        "x": -29.912,
+        "y": -0.857,
+        "z": 119.131
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-110",
+      "position": {
+        "x": -36.695,
+        "y": -0.923,
+        "z": 119.25
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-111",
+      "position": {
+        "x": -29.873,
+        "y": -0.815,
+        "z": 120.145
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-112",
+      "position": {
+        "x": -31.499,
+        "y": -0.772,
+        "z": 122.98
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-113",
+      "position": {
+        "x": -28.665,
+        "y": -1.034,
+        "z": 123.075
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-114",
+      "position": {
+        "x": -17.183,
+        "y": -1.109,
+        "z": 123.242
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-115",
+      "position": {
+        "x": -15.831,
+        "y": -1.177,
+        "z": 123.255
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-116",
+      "position": {
+        "x": -24.106,
+        "y": -1.242,
+        "z": 127.537
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-117",
+      "position": {
+        "x": -17.426,
+        "y": -1.277,
+        "z": 129.09
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-118",
+      "position": {
+        "x": -15.862,
+        "y": -1.306,
+        "z": 129.279
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-119",
+      "position": {
+        "x": -31.961,
+        "y": -0.644,
+        "z": 129.997
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-120",
+      "position": {
+        "x": -28.915,
+        "y": -0.571,
+        "z": 130.101
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-121",
+      "position": {
+        "x": -31.822,
+        "y": -0.267,
+        "z": 135.339
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-122",
+      "position": {
+        "x": -29.296,
+        "y": -0.682,
+        "z": 135.597
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-123",
+      "position": {
+        "x": -21.416,
+        "y": -0.699,
+        "z": 135.991
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-124",
+      "position": {
+        "x": -20.355,
+        "y": -0.447,
+        "z": 136.632
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-125",
+      "position": {
+        "x": -27.222,
+        "y": -1.06,
+        "z": 137.484
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-126",
+      "position": {
+        "x": -23.278,
+        "y": -0.682,
+        "z": 139.479
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-127",
+      "position": {
+        "x": -21.815,
+        "y": -0.682,
+        "z": 139.563
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-128",
+      "position": {
+        "x": -20.591,
+        "y": -0.773,
+        "z": 142.764
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-129",
+      "position": {
+        "x": -21.78,
+        "y": -0.723,
+        "z": 142.774
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-130",
+      "position": {
+        "x": -23.288,
+        "y": -0.707,
+        "z": 147.66
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "path-131",
+      "position": {
+        "x": -20.461,
+        "y": -0.472,
+        "z": 154.303
+      },
+      "floor": 1,
+      "type": "waypoint"
+    },
+    {
+      "id": "n-104",
+      "name": "Кабинет 104",
+      "position": {
+        "x": -8.101,
+        "y": -0.551,
+        "z": -21.774
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-104"
+    },
+    {
+      "id": "n-105",
+      "name": "Кабинет 105",
+      "position": {
+        "x": -10.825,
+        "y": -0.483,
+        "z": -21.845
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-105"
+    },
+    {
+      "id": "n-106",
+      "name": "Кабинет 106",
+      "position": {
+        "x": -16.689,
+        "y": -0.349,
+        "z": -21.757
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-106"
+    },
+    {
+      "id": "n-107",
+      "name": "Кабинет 107",
+      "position": {
+        "x": -17.996,
+        "y": -0.416,
+        "z": -22.386
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-107"
+    },
+    {
+      "id": "n-103",
+      "name": "Кабинет 103",
+      "position": {
+        "x": 7.392,
+        "y": -0.564,
+        "z": -21.88
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-103"
+    },
+    {
+      "id": "n-102",
+      "name": "Кабинет 102",
+      "position": {
+        "x": 9.749,
+        "y": -0.551,
+        "z": -21.876
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-102"
+    },
+    {
+      "id": "n-101",
+      "name": "Кабинет 101",
+      "position": {
+        "x": 11.354,
+        "y": -0.666,
+        "z": -22.633
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-101"
+    },
+    {
+      "id": "n-110",
+      "name": "Кабинет 110",
+      "position": {
+        "x": -6.864,
+        "y": -0.979,
+        "z": 3.567
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-110"
+    },
+    {
+      "id": "n-108",
+      "name": "Кабинет 108",
+      "position": {
+        "x": -8.643,
+        "y": -0.803,
+        "z": 4.872
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-108"
+    },
+    {
+      "id": "n-гардероб",
+      "name": "Гардероб",
+      "position": {
+        "x": 1.231,
+        "y": -1.185,
+        "z": 21.825
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-гардероб"
+    },
+    {
+      "id": "n-111",
+      "name": "Кабинет 111",
+      "position": {
+        "x": -0.326,
+        "y": -1.18,
+        "z": 21.682
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-111"
+    },
+    {
+      "id": "n-112",
+      "name": "Кабинет 112",
+      "position": {
+        "x": 3.812,
+        "y": -1.142,
+        "z": 26.642
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-112"
+    },
+    {
+      "id": "n-113",
+      "name": "Кабинет 113",
+      "position": {
+        "x": -11.122,
+        "y": -1.053,
+        "z": 18.167
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-113"
+    },
+    {
+      "id": "n-114",
+      "name": "Кабинет 114",
+      "position": {
+        "x": -14.064,
+        "y": -0.981,
+        "z": 17.959
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-114"
+    },
+    {
+      "id": "n-115",
+      "name": "Кабинет 115",
+      "position": {
+        "x": -18.51,
+        "y": -0.858,
+        "z": 30.145
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-115"
+    },
+    {
+      "id": "n-116",
+      "name": "Кабинет 116",
+      "position": {
+        "x": -18.651,
+        "y": -0.764,
+        "z": 33.682
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-116"
+    },
+    {
+      "id": "n-117",
+      "name": "Кабинет 117",
+      "position": {
+        "x": -18.694,
+        "y": -0.854,
+        "z": 36.16
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-117"
+    },
+    {
+      "id": "n-118",
+      "name": "Кабинет 118",
+      "position": {
+        "x": -19.095,
+        "y": -0.854,
+        "z": 42.149
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-118"
+    },
+    {
+      "id": "n-119",
+      "name": "Кабинет 119",
+      "position": {
+        "x": -19.313,
+        "y": -0.854,
+        "z": 45.445
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-119"
+    },
+    {
+      "id": "n-120",
+      "name": "Кабинет 120",
+      "position": {
+        "x": -19.329,
+        "y": -0.854,
+        "z": 48.439
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-120"
+    },
+    {
+      "id": "n-121",
+      "name": "Кабинет 121",
+      "position": {
+        "x": -19.363,
+        "y": -0.848,
+        "z": 51.731
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-121"
+    },
+    {
+      "id": "n-144",
+      "name": "Кабинет 144",
+      "position": {
+        "x": -15.917,
+        "y": -0.854,
+        "z": 51.965
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-144"
+    },
+    {
+      "id": "n-122",
+      "name": "Кабинет 122",
+      "position": {
+        "x": -19.296,
+        "y": -0.854,
+        "z": 54.344
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-122"
+    },
+    {
+      "id": "n-143",
+      "name": "Кабинет 143",
+      "position": {
+        "x": -16.067,
+        "y": -0.826,
+        "z": 55.383
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-143"
+    },
+    {
+      "id": "n-123",
+      "name": "Кабинет 123",
+      "position": {
+        "x": -19.446,
+        "y": -0.854,
+        "z": 59.57
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-123"
+    },
+    {
+      "id": "n-124",
+      "name": "Кабинет 124",
+      "position": {
+        "x": -19.437,
+        "y": -0.865,
+        "z": 64.444
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-124"
+    },
+    {
+      "id": "n-142",
+      "name": "Кабинет 142",
+      "position": {
+        "x": -16.093,
+        "y": -0.854,
+        "z": 64.58
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-142"
+    },
+    {
+      "id": "n-125",
+      "name": "Кабинет 125",
+      "position": {
+        "x": -19.425,
+        "y": -0.854,
+        "z": 70.707
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-125"
+    },
+    {
+      "id": "n-126",
+      "name": "Кабинет 126",
+      "position": {
+        "x": -19.947,
+        "y": -0.854,
+        "z": 78.977
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-126"
+    },
+    {
+      "id": "n-141",
+      "name": "Кабинет 141",
+      "position": {
+        "x": -15.229,
+        "y": -0.854,
+        "z": 96.321
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-141"
+    },
+    {
+      "id": "n-129",
+      "name": "Кабинет 129",
+      "position": {
+        "x": -25.154,
+        "y": -0.854,
+        "z": 96.177
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-129"
+    },
+    {
+      "id": "n-133",
+      "name": "Кабинет 133",
+      "position": {
+        "x": -20.794,
+        "y": -0.854,
+        "z": 100.103
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-133"
+    },
+    {
+      "id": "n-130",
+      "name": "Кабинет 130",
+      "position": {
+        "x": -35.331,
+        "y": -0.707,
+        "z": 97.025
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-130"
+    },
+    {
+      "id": "n-132",
+      "name": "Кабинет 132",
+      "position": {
+        "x": -34.733,
+        "y": -0.596,
+        "z": 100.166
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-132"
+    },
+    {
+      "id": "n-131",
+      "name": "Кабинет 131",
+      "position": {
+        "x": -37.03,
+        "y": -0.854,
+        "z": 100.585
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-131"
+    },
+    {
+      "id": "n-140",
+      "name": "Кабинет 140",
+      "position": {
+        "x": -15.414,
+        "y": -0.854,
+        "z": 102.131
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-140"
+    },
+    {
+      "id": "n-138",
+      "name": "Кабинет 138",
+      "position": {
+        "x": -15.735,
+        "y": -0.854,
+        "z": 111.726
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-138"
+    },
+    {
+      "id": "n-134",
+      "name": "Кабинет 134",
+      "position": {
+        "x": -18.204,
+        "y": -0.854,
+        "z": 114.998
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-134"
+    },
+    {
+      "id": "n-спорт-зал",
+      "name": "спорт зал",
+      "position": {
+        "x": -15.856,
+        "y": -0.854,
+        "z": 116.926
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-спорт-зал"
+    },
+    {
+      "id": "n-139",
+      "name": "Кабинет 139",
+      "position": {
+        "x": -15.615,
+        "y": -0.854,
+        "z": 109.197
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-139"
+    },
+    {
+      "id": "n-спортзал-2",
+      "name": "Спортзал 2",
+      "position": {
+        "x": -24.191,
+        "y": -0.854,
+        "z": 127.428
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-спортзал-2"
+    },
+    {
+      "id": "n-13",
+      "name": "Кабинет 13",
+      "position": {
+        "x": -30.309,
+        "y": -0.605,
+        "z": 123.103
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-13"
+    },
+    {
+      "id": "n-14",
+      "name": "Кабинет 14",
+      "position": {
+        "x": -31.142,
+        "y": -0.391,
+        "z": 130.368
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-14"
+    },
+    {
+      "id": "n-15",
+      "name": "Кабинет 15",
+      "position": {
+        "x": -31.71,
+        "y": -0.35,
+        "z": 135.612
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-15"
+    },
+    {
+      "id": "n-11",
+      "name": "Кабинет 11",
+      "position": {
+        "x": -29.898,
+        "y": -0.63,
+        "z": 119.544
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-11"
+    },
+    {
+      "id": "n-12",
+      "name": "Кабинет 12",
+      "position": {
+        "x": -36.008,
+        "y": -0.854,
+        "z": 119.347
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-12"
+    },
+    {
+      "id": "n-спортзал-1",
+      "name": "Спортзал 1",
+      "position": {
+        "x": -12.906,
+        "y": -3.441,
+        "z": 25.599
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-спортзал-1"
+    },
+    {
+      "id": "n-135",
+      "name": "Кабинет 135",
+      "position": {
+        "x": -18.268,
+        "y": -0.622,
+        "z": 129.585
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-135"
+    },
+    {
+      "id": "n-столовая-1",
+      "name": "Столовая 1",
+      "position": {
+        "x": -12.946,
+        "y": -0.855,
+        "z": 37.459
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-столовая-1"
+    },
+    {
+      "id": "n-столовая-2",
+      "name": "Столовая 2",
+      "position": {
+        "x": -16.701,
+        "y": -0.072,
+        "z": 128.9
+      },
+      "floor": 1,
+      "type": "room",
+      "roomId": "r-столовая-2"
+    },
+    {
+      "id": "n-вход",
+      "name": "Вход",
+      "position": {
+        "x": 5.289,
+        "y": -0.806,
+        "z": 11.953
+      },
+      "floor": 1,
+      "type": "entrance"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-path-027-path-026",
+      "from": "path-027",
+      "to": "path-026",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-026-path-037",
+      "from": "path-026",
+      "to": "path-037",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-037-path-041",
+      "from": "path-037",
+      "to": "path-041",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-041-path-043",
+      "from": "path-041",
+      "to": "path-043",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-037-path-038",
+      "from": "path-037",
+      "to": "path-038",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-043-path-042",
+      "from": "path-043",
+      "to": "path-042",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-043-path-047",
+      "from": "path-043",
+      "to": "path-047",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-042-path-034",
+      "from": "path-042",
+      "to": "path-034",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-034-path-033",
+      "from": "path-034",
+      "to": "path-033",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-033-path-029",
+      "from": "path-033",
+      "to": "path-029",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-033-path-032",
+      "from": "path-033",
+      "to": "path-032",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-032-path-031",
+      "from": "path-032",
+      "to": "path-031",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-032-path-028",
+      "from": "path-032",
+      "to": "path-028",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-031-path-035",
+      "from": "path-031",
+      "to": "path-035",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-035-path-039",
+      "from": "path-035",
+      "to": "path-039",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-039-path-040",
+      "from": "path-039",
+      "to": "path-040",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-040-path-036",
+      "from": "path-040",
+      "to": "path-036",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-036-path-030",
+      "from": "path-036",
+      "to": "path-030",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-033-path-044",
+      "from": "path-033",
+      "to": "path-044",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-044-path-045",
+      "from": "path-044",
+      "to": "path-045",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-044-path-046",
+      "from": "path-044",
+      "to": "path-046",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-046-path-048",
+      "from": "path-046",
+      "to": "path-048",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-048-path-049",
+      "from": "path-048",
+      "to": "path-049",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-048-path-050",
+      "from": "path-048",
+      "to": "path-050",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-050-path-053",
+      "from": "path-050",
+      "to": "path-053",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-053-path-054",
+      "from": "path-053",
+      "to": "path-054",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-054-path-055",
+      "from": "path-054",
+      "to": "path-055",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-053-path-052",
+      "from": "path-053",
+      "to": "path-052",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-052-path-051",
+      "from": "path-052",
+      "to": "path-051",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-054-path-057",
+      "from": "path-054",
+      "to": "path-057",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-057-path-056",
+      "from": "path-057",
+      "to": "path-056",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-056-path-058",
+      "from": "path-056",
+      "to": "path-058",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-058-path-059",
+      "from": "path-058",
+      "to": "path-059",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-059-path-061",
+      "from": "path-059",
+      "to": "path-061",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-061-path-060",
+      "from": "path-061",
+      "to": "path-060",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-061-path-062",
+      "from": "path-061",
+      "to": "path-062",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-062-path-064",
+      "from": "path-062",
+      "to": "path-064",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-062-path-063",
+      "from": "path-062",
+      "to": "path-063",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-063-path-066",
+      "from": "path-063",
+      "to": "path-066",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-066-path-065",
+      "from": "path-066",
+      "to": "path-065",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-065-path-067",
+      "from": "path-065",
+      "to": "path-067",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-067-path-069",
+      "from": "path-067",
+      "to": "path-069",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-069-path-068",
+      "from": "path-069",
+      "to": "path-068",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-069-path-070",
+      "from": "path-069",
+      "to": "path-070",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-070-path-072",
+      "from": "path-070",
+      "to": "path-072",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-070-path-071",
+      "from": "path-070",
+      "to": "path-071",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-071-path-073",
+      "from": "path-071",
+      "to": "path-073",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-073-path-074",
+      "from": "path-073",
+      "to": "path-074",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-074-path-075",
+      "from": "path-074",
+      "to": "path-075",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-075-path-076",
+      "from": "path-075",
+      "to": "path-076",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-076-path-078",
+      "from": "path-076",
+      "to": "path-078",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-078-path-077",
+      "from": "path-078",
+      "to": "path-077",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-077-path-080",
+      "from": "path-077",
+      "to": "path-080",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-080-path-081",
+      "from": "path-080",
+      "to": "path-081",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-081-path-082",
+      "from": "path-081",
+      "to": "path-082",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-080-path-079",
+      "from": "path-080",
+      "to": "path-079",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-079-path-083",
+      "from": "path-079",
+      "to": "path-083",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-083-path-087",
+      "from": "path-083",
+      "to": "path-087",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-087-path-095",
+      "from": "path-087",
+      "to": "path-095",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-095-path-094",
+      "from": "path-095",
+      "to": "path-094",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-094-path-091",
+      "from": "path-094",
+      "to": "path-091",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-091-path-090",
+      "from": "path-091",
+      "to": "path-090",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-091-path-086",
+      "from": "path-091",
+      "to": "path-086",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-094-path-097",
+      "from": "path-094",
+      "to": "path-097",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-095-path-099",
+      "from": "path-095",
+      "to": "path-099",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-099-path-100",
+      "from": "path-099",
+      "to": "path-100",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-090-path-089",
+      "from": "path-090",
+      "to": "path-089",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-089-path-085",
+      "from": "path-089",
+      "to": "path-085",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-100-path-102",
+      "from": "path-100",
+      "to": "path-102",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-102-path-101",
+      "from": "path-102",
+      "to": "path-101",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-101-path-103",
+      "from": "path-101",
+      "to": "path-103",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-103-path-104",
+      "from": "path-103",
+      "to": "path-104",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-103-path-106",
+      "from": "path-103",
+      "to": "path-106",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-106-path-105",
+      "from": "path-106",
+      "to": "path-105",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-106-path-108",
+      "from": "path-106",
+      "to": "path-108",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-108-path-107",
+      "from": "path-108",
+      "to": "path-107",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-108-path-114",
+      "from": "path-108",
+      "to": "path-114",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-114-path-115",
+      "from": "path-114",
+      "to": "path-115",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-114-path-117",
+      "from": "path-114",
+      "to": "path-117",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-117-path-118",
+      "from": "path-117",
+      "to": "path-118",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-117-path-116",
+      "from": "path-117",
+      "to": "path-116",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-116-path-120",
+      "from": "path-116",
+      "to": "path-120",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-120-path-119",
+      "from": "path-120",
+      "to": "path-119",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-119-path-121",
+      "from": "path-119",
+      "to": "path-121",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-121-path-122",
+      "from": "path-121",
+      "to": "path-122",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-122-path-125",
+      "from": "path-122",
+      "to": "path-125",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-125-path-126",
+      "from": "path-125",
+      "to": "path-126",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-126-path-127",
+      "from": "path-126",
+      "to": "path-127",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-127-path-129",
+      "from": "path-127",
+      "to": "path-129",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-129-path-128",
+      "from": "path-129",
+      "to": "path-128",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-127-path-124",
+      "from": "path-127",
+      "to": "path-124",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-124-path-123",
+      "from": "path-124",
+      "to": "path-123",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-129-path-130",
+      "from": "path-129",
+      "to": "path-130",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-116-path-113",
+      "from": "path-116",
+      "to": "path-113",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-113-path-112",
+      "from": "path-113",
+      "to": "path-112",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-113-path-111",
+      "from": "path-113",
+      "to": "path-111",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-111-path-109",
+      "from": "path-111",
+      "to": "path-109",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-112-path-110",
+      "from": "path-112",
+      "to": "path-110",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-130-path-131",
+      "from": "path-130",
+      "to": "path-131",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-085-path-084",
+      "from": "path-085",
+      "to": "path-084",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-084-path-088",
+      "from": "path-084",
+      "to": "path-088",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-088-path-092",
+      "from": "path-088",
+      "to": "path-092",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-088-path-093",
+      "from": "path-088",
+      "to": "path-093",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-093-path-098",
+      "from": "path-093",
+      "to": "path-098",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-092-path-096",
+      "from": "path-092",
+      "to": "path-096",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-026-path-025",
+      "from": "path-026",
+      "to": "path-025",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-025-path-022",
+      "from": "path-025",
+      "to": "path-022",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-022-path-023",
+      "from": "path-022",
+      "to": "path-023",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-023-path-024",
+      "from": "path-023",
+      "to": "path-024",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-022-path-019",
+      "from": "path-022",
+      "to": "path-019",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-019-path-010",
+      "from": "path-019",
+      "to": "path-010",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-010-path-007",
+      "from": "path-010",
+      "to": "path-007",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-007-path-020",
+      "from": "path-007",
+      "to": "path-020",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-007-path-005",
+      "from": "path-007",
+      "to": "path-005",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-005-path-021",
+      "from": "path-005",
+      "to": "path-021",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-005-path-006",
+      "from": "path-005",
+      "to": "path-006",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-006-path-016",
+      "from": "path-006",
+      "to": "path-016",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-006-path-008",
+      "from": "path-006",
+      "to": "path-008",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-008-path-018",
+      "from": "path-008",
+      "to": "path-018",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-008-path-009",
+      "from": "path-008",
+      "to": "path-009",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-005-path-002",
+      "from": "path-005",
+      "to": "path-002",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-010-path-004",
+      "from": "path-010",
+      "to": "path-004",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-004-path-003",
+      "from": "path-004",
+      "to": "path-003",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-004-path-012",
+      "from": "path-004",
+      "to": "path-012",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-012-path-001",
+      "from": "path-012",
+      "to": "path-001",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-001-path-011",
+      "from": "path-001",
+      "to": "path-011",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-011-path-015",
+      "from": "path-011",
+      "to": "path-015",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-011-path-013",
+      "from": "path-011",
+      "to": "path-013",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-013-path-017",
+      "from": "path-013",
+      "to": "path-017",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-013-path-014",
+      "from": "path-013",
+      "to": "path-014",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-003-path-000",
+      "from": "path-003",
+      "to": "path-000",
+      "kind": "corridor",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-019-n-104",
+      "from": "path-019",
+      "to": "n-104",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-020-n-105",
+      "from": "path-020",
+      "to": "n-105",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-018-n-106",
+      "from": "path-018",
+      "to": "n-106",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-009-n-107",
+      "from": "path-009",
+      "to": "n-107",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-015-n-103",
+      "from": "path-015",
+      "to": "n-103",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-017-n-102",
+      "from": "path-017",
+      "to": "n-102",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-014-n-101",
+      "from": "path-014",
+      "to": "n-101",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-022-n-110",
+      "from": "path-022",
+      "to": "n-110",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-024-n-108",
+      "from": "path-024",
+      "to": "n-108",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-041-n-гардероб",
+      "from": "path-041",
+      "to": "n-гардероб",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-042-n-111",
+      "from": "path-042",
+      "to": "n-111",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-047-n-112",
+      "from": "path-047",
+      "to": "n-112",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-029-n-113",
+      "from": "path-029",
+      "to": "n-113",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-028-n-114",
+      "from": "path-028",
+      "to": "n-114",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-049-n-115",
+      "from": "path-049",
+      "to": "n-115",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-051-n-116",
+      "from": "path-051",
+      "to": "n-116",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-052-n-117",
+      "from": "path-052",
+      "to": "n-117",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-056-n-118",
+      "from": "path-056",
+      "to": "n-118",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-058-n-119",
+      "from": "path-058",
+      "to": "n-119",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-060-n-120",
+      "from": "path-060",
+      "to": "n-120",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-063-n-121",
+      "from": "path-063",
+      "to": "n-121",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-064-n-144",
+      "from": "path-064",
+      "to": "n-144",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-066-n-122",
+      "from": "path-066",
+      "to": "n-122",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-067-n-143",
+      "from": "path-067",
+      "to": "n-143",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-068-n-123",
+      "from": "path-068",
+      "to": "n-123",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-071-n-124",
+      "from": "path-071",
+      "to": "n-124",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-072-n-142",
+      "from": "path-072",
+      "to": "n-142",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-073-n-125",
+      "from": "path-073",
+      "to": "n-125",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-076-n-126",
+      "from": "path-076",
+      "to": "n-126",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-087-n-141",
+      "from": "path-087",
+      "to": "n-141",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-085-n-129",
+      "from": "path-085",
+      "to": "n-129",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-097-n-133",
+      "from": "path-097",
+      "to": "n-133",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-088-n-130",
+      "from": "path-088",
+      "to": "n-130",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-096-n-132",
+      "from": "path-096",
+      "to": "n-132",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-098-n-131",
+      "from": "path-098",
+      "to": "n-131",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-100-n-140",
+      "from": "path-100",
+      "to": "n-140",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-104-n-138",
+      "from": "path-104",
+      "to": "n-138",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-105-n-134",
+      "from": "path-105",
+      "to": "n-134",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-107-n-спорт-зал",
+      "from": "path-107",
+      "to": "n-спорт-зал",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-102-n-139",
+      "from": "path-102",
+      "to": "n-139",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-116-n-спортзал-2",
+      "from": "path-116",
+      "to": "n-спортзал-2",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-112-n-13",
+      "from": "path-112",
+      "to": "n-13",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-119-n-14",
+      "from": "path-119",
+      "to": "n-14",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-121-n-15",
+      "from": "path-121",
+      "to": "n-15",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-109-n-11",
+      "from": "path-109",
+      "to": "n-11",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-110-n-12",
+      "from": "path-110",
+      "to": "n-12",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-044-n-спортзал-1",
+      "from": "path-044",
+      "to": "n-спортзал-1",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-117-n-135",
+      "from": "path-117",
+      "to": "n-135",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-055-n-столовая-1",
+      "from": "path-055",
+      "to": "n-столовая-1",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-117-n-столовая-2",
+      "from": "path-117",
+      "to": "n-столовая-2",
+      "kind": "door",
+      "bidirectional": true
+    },
+    {
+      "id": "e-path-027-n-вход",
+      "from": "path-027",
+      "to": "n-вход",
+      "kind": "corridor",
+      "bidirectional": true
+    }
+  ]
+}
