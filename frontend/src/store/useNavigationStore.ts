@@ -79,6 +79,8 @@ interface NavigationState {
   resetBuildingEdits: () => void;
   setStartRoom: (room: Room | null) => void;
   setEndRoom: (room: Room | null) => void;
+  /** Поставить старт = «Вход» (для простого сценария «зашёл и выбрал кабинет»). */
+  setStartAtEntrance: () => boolean;
   computeRoute: (opts?: { preferElevator?: boolean }) => boolean;
   clearRoute: () => void;
   updateUserPosition: (pos: Vec3, heading?: number) => void;
@@ -299,6 +301,16 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
 
   setStartRoom: (room) => set({ startRoom: room, route: null, arrived: false }),
   setEndRoom: (room) => set({ endRoom: room, route: null, arrived: false }),
+
+  setStartAtEntrance: () => {
+    const { buildingData } = get();
+    const entrance =
+      buildingData.rooms.find((r) => r.category === 'entrance') ??
+      buildingData.rooms.find((r) => /вход/i.test(r.name));
+    if (!entrance) return false;
+    set({ startRoom: entrance, route: null, arrived: false });
+    return true;
+  },
 
   swapPoints: () => {
     const { startRoom, endRoom } = get();

@@ -112,22 +112,27 @@ export function MapPage() {
         />
       </GlassCard>
 
-      {/* Управление симуляцией */}
+      {/* Управление: крупная понятная кнопка показа пути */}
       <div className="mt-4 flex gap-3">
-        <NeonButton full onClick={() => navigate('/ar')}>
-          ◎ AR-режим
-        </NeonButton>
         <NeonButton
           full
-          variant="ghost"
+          className="py-4 text-base"
           onClick={() => (sim.playing ? sim.pause() : sim.start())}
         >
-          {sim.playing ? '⏸ Пауза' : '▶ Демо-проход'}
+          {sim.playing ? '⏸ Пауза' : '▶ Показать путь'}
         </NeonButton>
-        <NeonButton variant="ghost" onClick={sim.reset}>
-          ⟲
+        <NeonButton variant="ghost" onClick={sim.reset} className="px-5">
+          ⟲ Сначала
         </NeonButton>
       </div>
+
+      {/* AR — вторичная опция для продвинутых, без давления на пользователя */}
+      <button
+        onClick={() => navigate('/ar')}
+        className="mt-2 w-full text-center text-xs text-white/35 underline-offset-4 hover:text-white/60 hover:underline"
+      >
+        Включить камеру (AR-режим)
+      </button>
 
       {/* Пошаговые инструкции */}
       <h3 className="mb-2 mt-6 px-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white/35">

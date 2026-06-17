@@ -57,7 +57,8 @@ export function PointSelectPage({ mode }: { mode: 'start' | 'end' }) {
       navigate('/select-end');
     } else {
       setEndRoom(room);
-      // Если старт уже выбран — строим маршрут и идём в AR
+      // Если старт уже выбран — строим маршрут и показываем карту с подсказками.
+      // (AR-режим остаётся опцией на странице карты — без обязательной калибровки.)
       const start = useNavigationStore.getState().startRoom;
       if (start) {
         const ok = useNavigationStore.getState().computeRoute();
@@ -72,7 +73,7 @@ export function PointSelectPage({ mode }: { mode: 'start' | 'end' }) {
             startedAt: Date.now(),
             completed: false,
           });
-          navigate('/ar');
+          navigate('/map');
         }
       } else {
         navigate('/select-start');

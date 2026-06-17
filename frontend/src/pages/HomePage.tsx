@@ -13,8 +13,15 @@ import { useHistoryStore } from '@/store/useHistoryStore';
 export function HomePage() {
   const navigate = useNavigate();
   const buildingData = useNavigationStore((s) => s.buildingData);
+  const setStartAtEntrance = useNavigationStore((s) => s.setStartAtEntrance);
   const favorites = useHistoryStore((s) => s.favorites);
   const history = useHistoryStore((s) => s.history);
+
+  // Простой сценарий: человек у входа жмёт «Куда идти?» → сразу выбор кабинета.
+  const goFromEntrance = () => {
+    const ok = setStartAtEntrance();
+    navigate(ok ? '/select-end' : '/select-start');
+  };
 
   const quickLinks = [
     { to: '/buildings', icon: '🏢', title: 'Здания', desc: 'Выбор корпуса' },
@@ -57,19 +64,24 @@ export function HomePage() {
           transition={{ delay: 0.18 }}
           className="mt-3 max-w-sm text-sm leading-relaxed text-white/55"
         >
-          Выберите откуда и куда — светящаяся линия в стиле Need for Speed
-          приведёт вас через камеру смартфона.
+          Выберите кабинет — и маршрут на карте приведёт вас от входа.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.26 }}
-          className="mt-7 flex gap-3"
+          className="mt-7 flex flex-col gap-2.5"
         >
-          <NeonButton onClick={() => navigate('/select-start')} className="flex-1 text-base">
-            Построить маршрут →
+          <NeonButton onClick={goFromEntrance} className="text-lg py-4">
+            🚪 Я у входа — куда идти?
           </NeonButton>
+          <button
+            onClick={() => navigate('/select-start')}
+            className="text-sm text-white/45 underline-offset-4 hover:text-white/70 hover:underline"
+          >
+            Я в другом месте — выбрать старт вручную
+          </button>
         </motion.div>
       </div>
 
