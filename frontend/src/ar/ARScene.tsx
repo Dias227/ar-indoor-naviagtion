@@ -174,12 +174,18 @@ function ARWorld({
         if (startNode) p0 = startNode.position;
       }
 
+      // Берём направление не к первой (часто в 0.5 м) точке, а к точке,
+      // отстоящей от старта минимум на 2.5 м — так направление устойчивое
+      // и весь маршрут поворачивается точно (короткий первый сегмент давал
+      // большой разворот всей линии).
+      const DIR_MIN_DIST = 2.5;
       let p1 = route.points[Math.min(1, route.points.length - 1)];
-      for (let i = 0; i < route.points.length - 1; i++) {
-        if (distance(route.points[i], p0) < 1.2) {
-          p1 = route.points[i + 1];
+      for (let i = 1; i < route.points.length; i++) {
+        if (distance(route.points[i], p0) >= DIR_MIN_DIST) {
+          p1 = route.points[i];
           break;
         }
+        p1 = route.points[i];
       }
 
       const routeDir = new THREE.Vector3(p1.x - p0.x, 0, p1.z - p0.z).normalize();
