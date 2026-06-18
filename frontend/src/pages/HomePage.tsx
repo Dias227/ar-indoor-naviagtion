@@ -13,7 +13,7 @@ import { useHistoryStore } from '@/store/useHistoryStore';
 const COLLEGE_NAME = 'Актюбинский высший политехнический колледж';
 const LOGO_URL = `${
   (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/'
-}brand/college-logo.svg`;
+}brand/college-logo.jpeg`;
 
 export function HomePage() {
   const navigate = useNavigate();
