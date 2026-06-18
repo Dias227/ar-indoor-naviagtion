@@ -380,8 +380,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
         patch.arrived = true;
       }
 
-      const nearest = route.points[prog.nearestIndex];
-      if (distance(aligned, nearest) > REROUTE_THRESHOLD && endRoom) {
+      if (prog.offRouteDistance > REROUTE_THRESHOLD && endRoom) {
         const startNode = graph.nearestNode(aligned, userFloor);
         if (startNode) {
           const newRoute = buildRoute(graph, startNode.id, endRoom.nodeId);
@@ -406,8 +405,14 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   },
 
   applyPositionFix: (fix) => {
-    const { graph, endRoom } = get();
-    const node = graph.getNode(fix.nodeId);
+    const { buildingData, graph, endRoom } = get();
+    const roomId = fix.nodeId.startsWith('room:')
+      ? fix.nodeId.slice('room:'.length)
+      : null;
+    const roomNodeId = roomId
+      ? buildingData.rooms.find((r) => r.id === roomId)?.nodeId
+      : null;
+    const node = graph.getNode(roomNodeId ?? fix.nodeId);
     const base = node ? { ...node.position } : fix.position;
     const snapped = graph.snapToGraph(base, node?.floor ?? fix.floor);
     const position = snapped ? snapped.position : base;

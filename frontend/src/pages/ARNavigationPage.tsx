@@ -5,7 +5,7 @@
  *  - проверка поддержки WebXR → ARScene (hit-test, anchors) либо
  *    FallbackAR (камера + гироскоп) для iOS/десктопа;
  *  - DOM-оверлей: инструкция текущего шага, компактная миникарта,
- *    прогресс, голос вкл/выкл, QR-сканер, выход;
+ *    прогресс, голос вкл/выкл, выход;
  *  - голосовые подсказки шагов маршрута;
  *  - экран прибытия.
  */
@@ -16,11 +16,10 @@ import type { ARSessionState } from '@/types';
 import { useNavigationStore } from '@/store/useNavigationStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useRouteVoiceAnnouncements } from '@/hooks/useVoiceGuidance';
-import { useQRScanner } from '@/hooks/useQRScanner';
-import { useRouteSimulation } from '@/hooks/useRouteSimulation';
+import { useFallbackStepTracking } from '@/hooks/useFallbackStepTracking';
 import { isImmersiveARSupported } from '@/ar/webxr';
 import { ARScene } from '@/ar/ARScene';
-import { FallbackAR, type FallbackARHandle } from '@/ar/FallbackAR';
+import { FallbackAR } from '@/ar/FallbackAR';
 import { Minimap } from '@/components/Minimap';
 import { LocationFixBar } from '@/components/LocationFixBar';
 import { NeonButton } from '@/components/NeonButton';
@@ -42,20 +41,11 @@ export function ARNavigationPage() {
 
   const [xrSupported, setXrSupported] = useState<boolean | null>(null);
   const [arState, setArState] = useState<ARSessionState>('idle');
-  const [qrActive, setQrActive] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const fallbackRef = useRef<FallbackARHandle>(null);
-  const [fallbackVideo, setFallbackVideo] = useState<HTMLVideoElement | null>(null);
-
-  const sim = useRouteSimulation();
 
   // Голосовые подсказки
   useRouteVoiceAnnouncements();
-
-  // QR-сканер на видеопотоке fallback-режима
-  const videoRefObj = useRef<HTMLVideoElement | null>(null);
-  videoRefObj.current = fallbackVideo;
-  const { lastScan } = useQRScanner(videoRefObj, qrActive && !!fallbackVideo);
+  useFallbackStepTracking(xrSupported === false && arState === 'fallback');
 
   // Определение поддержки WebXR
   useEffect(() => {
@@ -91,13 +81,7 @@ export function ARNavigationPage() {
         />
       )}
       {xrSupported === false && (
-        <FallbackAR
-          ref={(h) => {
-            (fallbackRef as React.MutableRefObject<FallbackARHandle | null>).current = h;
-            setFallbackVideo(h?.video ?? null);
-          }}
-          onCameraReady={handleCameraReady}
-        />
+        <FallbackAR onCameraReady={handleCameraReady} />
       )}
 
       {/* ── DOM-оверлей ── */}
@@ -140,7 +124,7 @@ export function ARNavigationPage() {
           </div>
         </div>
 
-        {/* Левый верх: поворот AR-маршрута (только WebXR) */}
+        {/* Левый верх: ручная подстройка WebXR-калибровки */}
         {usingXR && (arState === 'tracking' || arState === 'scanning-floor') && (
           <div className="absolute left-3 top-24 pointer-events-auto flex gap-1.5">
             <HeadingBtn
@@ -167,23 +151,6 @@ export function ARNavigationPage() {
             <Minimap compact className="relative" />
           </div>
         )}
-
-        {/* QR-уведомление */}
-        <AnimatePresence>
-          {lastScan && (
-            <motion.div
-              key={lastScan.raw + String(lastScan.fix?.timestamp)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="absolute bottom-44 left-1/2 -translate-x-1/2 rounded-full border border-neon/40 bg-black/70 px-4 py-2 text-xs text-neon backdrop-blur-md"
-            >
-              {lastScan.fix
-                ? '📍 Позиция обновлена по QR-маркеру'
-                : `QR: ${lastScan.raw.slice(0, 40)}`}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Низ: прогресс + управление */}
         <div className="absolute bottom-0 left-0 right-0 safe-bottom pointer-events-auto px-4 pb-4">
@@ -214,25 +181,6 @@ export function ARNavigationPage() {
               {voiceEnabled ? '🔊' : '🔇'}
             </RoundBtn>
 
-            {/* Симуляция движения в fallback-режиме */}
-            {!usingXR && (
-              <RoundBtn
-                active={sim.playing}
-                onClick={() => (sim.playing ? sim.pause() : sim.start())}
-                label={sim.playing ? 'Пауза' : 'Идти'}
-              >
-                {sim.playing ? '⏸' : '▶'}
-              </RoundBtn>
-            )}
-            {!usingXR && (
-              <RoundBtn
-                active={qrActive}
-                onClick={() => setQrActive((v) => !v)}
-                label="QR"
-              >
-                ⌗
-              </RoundBtn>
-            )}
             <div className="flex flex-col items-center gap-1">
               <LocationFixBar compact />
             </div>

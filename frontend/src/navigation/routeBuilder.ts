@@ -172,26 +172,67 @@ function capitalize(s: string): string {
 export function routeProgress(
   route: RouteResult,
   userPosition: Vec3,
-): { fraction: number; travelled: number; remaining: number; nearestIndex: number } {
-  let bestIdx = 0;
+): {
+  fraction: number;
+  travelled: number;
+  remaining: number;
+  nearestIndex: number;
+  offRouteDistance: number;
+} {
+  if (route.points.length < 2) {
+    return {
+      fraction: 0,
+      travelled: 0,
+      remaining: route.totalDistance,
+      nearestIndex: 0,
+      offRouteDistance: Infinity,
+    };
+  }
+
+  let bestIdx = 1;
   let bestDist = Infinity;
-  for (let i = 0; i < route.points.length; i++) {
-    const d = distance(route.points[i], userPosition);
+  let bestTravelled = 0;
+  let travelledBeforeSegment = 0;
+
+  for (let i = 1; i < route.points.length; i++) {
+    const a = route.points[i - 1];
+    const b = route.points[i];
+    const ab = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z };
+    const ap = {
+      x: userPosition.x - a.x,
+      y: userPosition.y - a.y,
+      z: userPosition.z - a.z,
+    };
+    const len2 = ab.x * ab.x + ab.y * ab.y + ab.z * ab.z;
+    const t =
+      len2 === 0
+        ? 0
+        : Math.max(
+            0,
+            Math.min(1, (ap.x * ab.x + ap.y * ab.y + ap.z * ab.z) / len2),
+          );
+    const projected = {
+      x: a.x + ab.x * t,
+      y: a.y + ab.y * t,
+      z: a.z + ab.z * t,
+    };
+    const segLength = distance(a, b);
+    const d = distance(projected, userPosition);
     if (d < bestDist) {
       bestDist = d;
       bestIdx = i;
+      bestTravelled = travelledBeforeSegment + segLength * t;
     }
+    travelledBeforeSegment += segLength;
   }
-  let travelled = 0;
-  for (let i = 1; i <= bestIdx; i++) {
-    travelled += distance(route.points[i - 1], route.points[i]);
-  }
-  const fraction = route.totalDistance === 0 ? 0 : travelled / route.totalDistance;
+  const fraction =
+    route.totalDistance === 0 ? 0 : bestTravelled / route.totalDistance;
   return {
     fraction: Math.max(0, Math.min(1, fraction)),
-    travelled,
-    remaining: Math.max(0, route.totalDistance - travelled),
+    travelled: bestTravelled,
+    remaining: Math.max(0, route.totalDistance - bestTravelled),
     nearestIndex: bestIdx,
+    offRouteDistance: bestDist,
   };
 }
 

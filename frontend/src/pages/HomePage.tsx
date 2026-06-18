@@ -10,6 +10,11 @@ import { BottomNav } from '@/components/PageShell';
 import { useNavigationStore } from '@/store/useNavigationStore';
 import { useHistoryStore } from '@/store/useHistoryStore';
 
+const COLLEGE_NAME = 'Актюбинский высший политехнический колледж';
+const LOGO_URL = `${
+  (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/'
+}brand/college-logo.svg`;
+
 export function HomePage() {
   const navigate = useNavigate();
   const buildingData = useNavigationStore((s) => s.buildingData);
@@ -41,13 +46,25 @@ export function HomePage() {
           animate={{ scale: [1, 1.2, 1], opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 6, repeat: Infinity }}
         />
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-xs uppercase tracking-[0.3em] text-neon/80"
+          className="flex items-center gap-3"
         >
-          AR Indoor Navigation
-        </motion.p>
+          <img
+            src={LOGO_URL}
+            alt={COLLEGE_NAME}
+            className="h-16 w-16 shrink-0 rounded-full border border-white/20 bg-white object-cover shadow-neon"
+          />
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-[0.18em] text-neon/80">
+              AR Indoor Navigation
+            </p>
+            <p className="mt-1 max-w-[16rem] text-sm font-semibold leading-snug text-white/85">
+              {COLLEGE_NAME}
+            </p>
+          </div>
+        </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
@@ -88,9 +105,11 @@ export function HomePage() {
       {/* Текущее здание */}
       <div className="px-5">
         <GlassCard delay={0.3} className="flex items-center gap-4 p-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neon/10 text-2xl">
-            🏛
-          </div>
+          <img
+            src={LOGO_URL}
+            alt=""
+            className="h-12 w-12 shrink-0 rounded-full border border-white/15 bg-white object-cover"
+          />
           <div className="min-w-0 flex-1">
             <p className="text-[11px] uppercase tracking-wider text-white/40">
               Текущее здание

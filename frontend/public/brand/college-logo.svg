@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Актюбинский высший политехнический колледж</title>
+  <desc id="desc">Круглый сине-белый логотип колледжа с колоннами, лавровыми ветвями и годом 1965.</desc>
+  <defs>
+    <path id="topArc" d="M82 258a174 174 0 0 1 348 0" />
+    <path id="bottomArc" d="M430 254a174 174 0 0 1-348 0" />
+  </defs>
+  <circle cx="256" cy="256" r="248" fill="#223286" />
+  <circle cx="256" cy="256" r="224" fill="none" stroke="#ffffff" stroke-width="18" />
+  <circle cx="256" cy="256" r="205" fill="#26358c" stroke="#f4c430" stroke-width="10" />
+  <circle cx="256" cy="256" r="160" fill="#ffffff" />
+  <circle cx="256" cy="256" r="148" fill="#26358c" />
+
+  <text fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" letter-spacing="1.8">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">AQTOBE JOGARY POLITEHNIKALYQ KOLLEDJI</textPath>
+  </text>
+  <text fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="1.5">
+    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">АКТЮБИНСКИЙ ВЫСШИЙ ПОЛИТЕХНИЧЕСКИЙ КОЛЛЕДЖ</textPath>
+  </text>
+
+  <g fill="#ffffff">
+    <circle cx="55" cy="256" r="10" />
+    <circle cx="457" cy="256" r="10" />
+    <path d="M173 362h166v22H173z" />
+    <path d="M197 325h118v24H197z" />
+    <path d="M183 306h146v20H183z" />
+    <path d="M190 211h132v21H190z" />
+    <path d="M205 237h18v63h-18zM239 237h18v63h-18zM273 237h18v63h-18z" />
+    <path d="M178 205l78-48 78 48H178z" fill="none" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" />
+    <path d="M205 154h102v13H205z" />
+    <text x="256" y="273" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="800">AKTOBE</text>
+    <text x="256" y="302" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800">HIGH</text>
+    <text x="256" y="329" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="800">POLYTECHNICAL</text>
+    <text x="256" y="356" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800">COLLEGE</text>
+    <text x="256" y="435" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800">1965</text>
+    <rect x="188" y="417" width="14" height="14" transform="rotate(45 195 424)" />
+    <rect x="310" y="417" width="14" height="14" transform="rotate(45 317 424)" />
+  </g>
+
+  <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round">
+    <path d="M143 352c-43-48-56-110-35-170" />
+    <path d="M369 352c43-48 56-110 35-170" />
+  </g>
+  <g fill="#ffffff">
+    <ellipse cx="124" cy="191" rx="9" ry="22" transform="rotate(35 124 191)" />
+    <ellipse cx="118" cy="225" rx="9" ry="22" transform="rotate(15 118 225)" />
+    <ellipse cx="121" cy="260" rx="9" ry="22" transform="rotate(-8 121 260)" />
+    <ellipse cx="132" cy="294" rx="9" ry="22" transform="rotate(-28 132 294)" />
+    <ellipse cx="153" cy="326" rx="9" ry="22" transform="rotate(-48 153 326)" />
+    <ellipse cx="388" cy="191" rx="9" ry="22" transform="rotate(-35 388 191)" />
+    <ellipse cx="394" cy="225" rx="9" ry="22" transform="rotate(-15 394 225)" />
+    <ellipse cx="391" cy="260" rx="9" ry="22" transform="rotate(8 391 260)" />
+    <ellipse cx="380" cy="294" rx="9" ry="22" transform="rotate(28 380 294)" />
+    <ellipse cx="359" cy="326" rx="9" ry="22" transform="rotate(48 359 326)" />
+    <circle cx="211" cy="109" r="8" />
+    <circle cx="234" cy="100" r="8" />
+    <circle cx="256" cy="97" r="8" />
+    <circle cx="278" cy="100" r="8" />
+    <circle cx="301" cy="109" r="8" />
+  </g>
+</svg>

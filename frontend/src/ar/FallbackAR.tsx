@@ -3,20 +3,20 @@
  *
  * Камера телефона выводится как фон (getUserMedia), поверх — Three.js
  * сцена с маршрутом. Ориентация виртуальной камеры управляется
- * гироскопом (deviceorientation), позиция — фиксациями QR-маркеров
- * и симуляцией движения. Видеоэлемент одновременно служит источником
- * кадров для QR-сканера (visual positioning).
+ * гироскопом (deviceorientation), позиция — оценкой шагов.
  */
 import {
   forwardRef,
   Suspense,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import type { RouteResult } from '@/types';
 import { useNavigationStore } from '@/store/useNavigationStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { RouteLine } from '@/three/RouteLine';
@@ -61,18 +61,30 @@ export const FallbackAR = forwardRef<FallbackARHandle, FallbackARProps>(
       };
     }, [onCameraReady]);
 
-    // Разрешение на гироскоп (iOS требует явного запроса)
+    // Разрешение на гироскоп и шаги (iOS требует явного запроса)
     useEffect(() => {
-      const D = DeviceOrientationEvent as unknown as {
+      const Orientation = DeviceOrientationEvent as unknown as {
         requestPermission?: () => Promise<string>;
       };
-      if (typeof D.requestPermission === 'function') {
+      const Motion = DeviceMotionEvent as unknown as {
+        requestPermission?: () => Promise<string>;
+      };
+      if (
+        typeof Orientation.requestPermission === 'function' ||
+        typeof Motion.requestPermission === 'function'
+      ) {
         const ask = () => {
-          D.requestPermission?.().catch(() => undefined);
+          Orientation.requestPermission?.().catch(() => undefined);
+          Motion.requestPermission?.().catch(() => undefined);
           window.removeEventListener('click', ask);
+          window.removeEventListener('touchend', ask);
         };
         window.addEventListener('click', ask);
-        return () => window.removeEventListener('click', ask);
+        window.addEventListener('touchend', ask);
+        return () => {
+          window.removeEventListener('click', ask);
+          window.removeEventListener('touchend', ask);
+        };
       }
     }, []);
 
@@ -111,10 +123,22 @@ function FallbackWorld() {
   const route = useNavigationStore((s) => s.route);
   const progress = useNavigationStore((s) => s.progress);
   const userPosition = useNavigationStore((s) => s.userPosition);
+  const calibrationHeadingOffset = useNavigationStore(
+    (s) => s.calibrationHeadingOffset,
+  );
   const { routeColor, showParticles } = useSettingsStore();
 
   const orientationRef = useRef<{ alpha: number; beta: number; gamma: number } | null>(null);
   const smoothQuat = useRef(new THREE.Quaternion());
+  const autoYawRef = useRef<number | null>(null);
+  const routePivot = useMemo(() => {
+    if (!userPosition) return null;
+    return new THREE.Vector3(userPosition.x, userPosition.y, userPosition.z);
+  }, [userPosition]);
+
+  useEffect(() => {
+    autoYawRef.current = null;
+  }, [route]);
 
   useEffect(() => {
     const handler = (e: DeviceOrientationEvent) => {
@@ -140,10 +164,25 @@ function FallbackWorld() {
       const alpha = THREE.MathUtils.degToRad(o.alpha);
       const beta = THREE.MathUtils.degToRad(o.beta);
       const gamma = THREE.MathUtils.degToRad(o.gamma);
+      const screenAngle = THREE.MathUtils.degToRad(
+        window.screen.orientation?.angle ??
+          (window.orientation as number | undefined) ??
+          0,
+      );
       const euler = new THREE.Euler(beta, alpha, -gamma, 'YXZ');
-      const target = new THREE.Quaternion()
-        .setFromEuler(euler)
-        .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2));
+      const target = new THREE.Quaternion().setFromEuler(euler);
+      target.multiply(
+        new THREE.Quaternion().setFromAxisAngle(
+          new THREE.Vector3(1, 0, 0),
+          -Math.PI / 2,
+        ),
+      );
+      target.multiply(
+        new THREE.Quaternion().setFromAxisAngle(
+          new THREE.Vector3(0, 0, 1),
+          -screenAngle,
+        ),
+      );
       smoothQuat.current.slerp(target, 0.15);
       camera.quaternion.copy(smoothQuat.current);
     } else if (route && userPosition) {
@@ -151,10 +190,23 @@ function FallbackWorld() {
       const heading = useNavigationStore.getState().userHeading;
       camera.rotation.set(0, heading + Math.PI, 0);
     }
+
+    if (route && userPosition && autoYawRef.current === null) {
+      const forward = new THREE.Vector3(0, 0, -1)
+        .applyQuaternion(camera.quaternion)
+        .setY(0)
+        .normalize();
+      const routeDir = routeDirectionAt(route, progress.travelled);
+      if (forward.lengthSq() > 0.001 && routeDir.lengthSq() > 0.001) {
+        autoYawRef.current =
+          Math.atan2(forward.x, forward.z) -
+          Math.atan2(routeDir.x, routeDir.z);
+      }
+    }
   });
 
   if (!route) return null;
-  return (
+  const routeLine = (
     <RouteLine
       route={route}
       color={routeColor}
@@ -163,4 +215,28 @@ function FallbackWorld() {
       radius={0.12}
     />
   );
+
+  if (!routePivot) return routeLine;
+
+  const yaw = (autoYawRef.current ?? 0) + calibrationHeadingOffset;
+
+  return (
+    <group position={routePivot} rotation={[0, yaw, 0]}>
+      <group position={routePivot.clone().multiplyScalar(-1)}>{routeLine}</group>
+    </group>
+  );
+}
+
+function routeDirectionAt(route: RouteResult, travelled: number): THREE.Vector3 {
+  let acc = 0;
+  for (let i = 1; i < route.points.length; i++) {
+    const a = route.points[i - 1];
+    const b = route.points[i];
+    const segment = Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+    if (acc + segment >= travelled + 0.2 || i === route.points.length - 1) {
+      return new THREE.Vector3(b.x - a.x, 0, b.z - a.z).normalize();
+    }
+    acc += segment;
+  }
+  return new THREE.Vector3(0, 0, -1);
 }
