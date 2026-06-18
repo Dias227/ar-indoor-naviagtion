@@ -1,4 +1,6 @@
 node_modules/
+# Дубликат логотипа в корне frontend (рабочая копия лежит в public/brand/)
+/frontend/logo.jpeg
 dist/
 dev-dist/
 
