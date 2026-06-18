@@ -20,7 +20,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon.svg'],
+      includeAssets: ['icons/icon.svg', 'brand/college-logo.jpeg'],
       manifest: {
         name: 'AR Indoor Navigation',
         short_name: 'AR Nav',
@@ -46,7 +46,7 @@ export default defineConfig({
       },
       workbox: {
         // GLB-модель тяжёлая — кэшируем по запросу, а не в precache
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,jpeg,jpg,woff2}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
