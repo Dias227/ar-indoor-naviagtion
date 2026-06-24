@@ -24,7 +24,7 @@ SKIP_MARKER_NAMES = frozenset({'Пустышка', 'Плоскость', 'Сфе
 BUILDING_ROOT_NAMES = frozenset({'College_Floor1'})
 # Версия данных: увеличивайте при перегенерации, чтобы приложение
 # принудительно заменило устаревшие облачные/локальные данные.
-DATA_VERSION = 5
+DATA_VERSION = 6
 GRID_STEP = 0.75
 PATH_LINK_MAX = 6.0
 PATH_SIMPLIFY_MIN = 1.0

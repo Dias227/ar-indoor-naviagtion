@@ -26,6 +26,7 @@ import { collegeBuildingData } from '@/navigation/collegeBuilding';
 import { fetchBuilding, fetchBuildings } from '@/services/api';
 import {
   cloudConfigured,
+  ensureBuiltinBuildingData,
   persistBuilding,
   pullFromCloud,
   pushToCloud,
@@ -41,7 +42,9 @@ const persistedEdit = loadJSON<BuildingData | null>(
   StorageKeys.editedBuilding,
   null,
 );
-const initialBuildingData: BuildingData = persistedEdit ?? collegeBuildingData;
+const initialBuildingData: BuildingData = ensureBuiltinBuildingData(
+  persistedEdit ?? collegeBuildingData,
+);
 
 interface NavigationState {
   buildings: BuildingData[];
@@ -126,6 +129,8 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   loadBuildings: async () => {
     set({ cloudSyncStatus: 'syncing' });
 
+    const applyBuiltin = (data: BuildingData) => ensureBuiltinBuildingData(data);
+
     // Принудительное обновление: если встроенные данные новее сохранённых,
     // стираем устаревший кэш/правки, чтобы показать актуальные кабинеты из GLB.
     const builtinVersion = collegeBuildingData.building.dataVersion ?? 0;
@@ -141,6 +146,9 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
         graph: makeGraph(collegeBuildingData),
         cloudSyncStatus: cloudConfigured() ? 'idle' : 'offline',
       });
+      if (cloudConfigured()) {
+        void pushToCloud(collegeBuildingData);
+      }
       return;
     }
 
@@ -148,10 +156,20 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       try {
         const pulled = await pullFromCloud();
         if (pulled) {
+          const active = applyBuiltin(pulled.active);
+          const buildings = pulled.buildings.map((b) => applyBuiltin(b));
+          if (
+            active.rooms.length !== pulled.active.rooms.length ||
+            active.building.dataVersion !== pulled.active.building.dataVersion
+          ) {
+            saveJSON(StorageKeys.editedBuilding, active);
+            saveJSON(StorageKeys.buildingCache, buildings);
+            void pushToCloud(active);
+          }
           set({
-            buildings: pulled.buildings,
-            buildingData: pulled.active,
-            graph: makeGraph(pulled.active),
+            buildings,
+            buildingData: active,
+            graph: makeGraph(active),
             cloudSyncStatus: 'synced',
             cloudLastSyncedAt: pulled.updatedAt,
           });
@@ -163,26 +181,42 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     }
 
     try {
-      const buildings = await fetchBuildings();
+      const buildings = (await fetchBuildings()).map((b) => applyBuiltin(b));
       const edited = loadJSON<BuildingData | null>(
         StorageKeys.editedBuilding,
         null,
       );
       let merged = buildings;
       if (edited) {
-        const has = buildings.some((b) => b.building.id === edited.building.id);
+        const normalized = applyBuiltin(edited);
+        const has = buildings.some((b) => b.building.id === normalized.building.id);
         merged = has
           ? buildings.map((b) =>
-              b.building.id === edited.building.id ? edited : b,
+              b.building.id === normalized.building.id ? normalized : b,
             )
-          : [edited, ...buildings];
+          : [normalized, ...buildings];
       }
+      const active =
+        merged.find((b) => b.building.id === collegeBuildingData.building.id) ??
+        merged[0] ??
+        collegeBuildingData;
       set({
         buildings: merged,
+        buildingData: active,
+        graph: makeGraph(active),
         cloudSyncStatus: cloudConfigured() ? 'error' : 'offline',
       });
     } catch {
-      set({ cloudSyncStatus: 'offline' });
+      const fallback = applyBuiltin(
+        loadJSON<BuildingData | null>(StorageKeys.editedBuilding, null) ??
+          collegeBuildingData,
+      );
+      set({
+        buildings: [fallback],
+        buildingData: fallback,
+        graph: makeGraph(fallback),
+        cloudSyncStatus: 'offline',
+      });
     }
   },
 
@@ -195,10 +229,17 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     try {
       const pulled = await pullFromCloud();
       if (pulled) {
+        const active = ensureBuiltinBuildingData(pulled.active);
+        const buildings = pulled.buildings.map((b) =>
+          ensureBuiltinBuildingData(b),
+        );
+        if (active.rooms.length !== pulled.active.rooms.length) {
+          void pushToCloud(active);
+        }
         set({
-          buildings: pulled.buildings,
-          buildingData: pulled.active,
-          graph: makeGraph(pulled.active),
+          buildings,
+          buildingData: active,
+          graph: makeGraph(active),
           route: null,
           startRoom: null,
           endRoom: null,
@@ -289,9 +330,10 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   },
 
   setBuildingData: (data) => {
+    const resolved = ensureBuiltinBuildingData(data);
     set({
-      buildingData: data,
-      graph: makeGraph(data),
+      buildingData: resolved,
+      graph: makeGraph(resolved),
       route: null,
       startRoom: null,
       endRoom: null,

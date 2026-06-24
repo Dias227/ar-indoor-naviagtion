@@ -6,7 +6,7 @@
     "description": "Навигация по 1 этажу — маршрут из Blender (Плоскость + маркеры дверей).",
     "modelUrl": "/models/collehenavnewblender.glb",
     "metersPerUnit": 1,
-    "dataVersion": 5,
+    "dataVersion": 6,
     "floors": [
       {
         "id": "f1",

@@ -21,6 +21,27 @@ export function cloudConfigured(): boolean {
   return isFirebaseConfigured();
 }
 
+function dataVersionOf(data: BuildingData): number {
+  return data.building.dataVersion ?? 0;
+}
+
+/**
+ * Встроенный JSON из GLB — источник истины для списка кабинетов.
+ * Облако/localStorage не должны подменять его урезанной версией.
+ */
+export function ensureBuiltinBuildingData(data: BuildingData): BuildingData {
+  if (data.building.id !== collegeBuildingData.building.id) {
+    return data;
+  }
+  const builtinVersion = dataVersionOf(collegeBuildingData);
+  const version = dataVersionOf(data);
+  const incomplete = data.rooms.length < collegeBuildingData.rooms.length;
+  if (builtinVersion > version || incomplete) {
+    return collegeBuildingData;
+  }
+  return data;
+}
+
 function localUpdatedAt(): number {
   return loadJSON<number>(StorageKeys.buildingUpdatedAt, 0);
 }
@@ -39,15 +60,31 @@ export function pickNewerBuilding(
     return { data: collegeBuildingData, updatedAt: 0, source: 'default' };
   }
   if (!cloud && local) {
-    return { data: local, updatedAt: localTs, source: 'local' };
+    return {
+      data: ensureBuiltinBuildingData(local),
+      updatedAt: localTs,
+      source: 'local',
+    };
   }
   if (cloud && !local) {
-    return { data: cloud.data, updatedAt: cloud.updatedAt, source: 'cloud' };
+    return {
+      data: ensureBuiltinBuildingData(cloud.data),
+      updatedAt: cloud.updatedAt,
+      source: 'cloud',
+    };
   }
   if (cloud!.updatedAt >= localTs) {
-    return { data: cloud!.data, updatedAt: cloud!.updatedAt, source: 'cloud' };
+    return {
+      data: ensureBuiltinBuildingData(cloud!.data),
+      updatedAt: cloud!.updatedAt,
+      source: 'cloud',
+    };
   }
-  return { data: local!, updatedAt: localTs, source: 'local' };
+  return {
+    data: ensureBuiltinBuildingData(local!),
+    updatedAt: localTs,
+    source: 'local',
+  };
 }
 
 /** Сохранить локально + отправить в облако (если настроено). */
@@ -104,7 +141,7 @@ export async function pullFromCloud(): Promise<{
     if (local && local.building.id === c.data.building.id) {
       return pickNewerBuilding(local, localTs, c).data;
     }
-    return c.data;
+    return ensureBuiltinBuildingData(c.data);
   });
 
   // Локальное здание, которого нет в облаке
@@ -123,16 +160,17 @@ export async function pullFromCloud(): Promise<{
     localTs,
     cloudRec,
   );
+  const resolved = ensureBuiltinBuildingData(picked.data);
 
-  saveJSON(StorageKeys.editedBuilding, picked.data);
+  saveJSON(StorageKeys.editedBuilding, resolved);
   setLocalUpdatedAt(picked.updatedAt);
   saveJSON(StorageKeys.buildingCache, merged);
 
   return {
     buildings: merged.map((b) =>
-      b.building.id === picked.data.building.id ? picked.data : b,
+      b.building.id === resolved.building.id ? resolved : b,
     ),
-    active: picked.data,
+    active: resolved,
     updatedAt: picked.updatedAt,
     source: picked.source,
   };
