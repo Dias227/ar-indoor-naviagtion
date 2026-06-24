@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ARSessionState } from '@/types';
 import { useNavigationStore } from '@/store/useNavigationStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
-import { useRouteVoiceAnnouncements } from '@/hooks/useVoiceGuidance';
+import { useRouteVoiceAnnouncements, useVoiceGuidance, useCurrentRouteVoiceText } from '@/hooks/useVoiceGuidance';
 import { useFallbackStepTracking } from '@/hooks/useFallbackStepTracking';
 import { isImmersiveARSupported } from '@/ar/webxr';
 import { ARScene } from '@/ar/ARScene';
@@ -38,6 +38,8 @@ export function ARNavigationPage() {
   const resetARCalibration = useNavigationStore((s) => s.resetARCalibration);
   const lastFix = useNavigationStore((s) => s.lastFix);
   const { voiceEnabled, showMinimap, update } = useSettingsStore();
+  const { speak } = useVoiceGuidance();
+  const routeVoiceText = useCurrentRouteVoiceText();
 
   const [xrSupported, setXrSupported] = useState<boolean | null>(null);
   const [arState, setArState] = useState<ARSessionState>('idle');
@@ -175,7 +177,14 @@ export function ARNavigationPage() {
             <RoundBtn onClick={() => navigate('/map')} label="Карта">🗺</RoundBtn>
             <RoundBtn
               active={voiceEnabled}
-              onClick={() => update({ voiceEnabled: !voiceEnabled })}
+              onClick={() => {
+                if (voiceEnabled) {
+                  update({ voiceEnabled: false });
+                  return;
+                }
+                update({ voiceEnabled: true });
+                if (routeVoiceText) speak(routeVoiceText, { force: true });
+              }}
               label="Голос"
             >
               {voiceEnabled ? '🔊' : '🔇'}

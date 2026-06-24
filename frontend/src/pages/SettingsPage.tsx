@@ -96,7 +96,7 @@ export function SettingsPage() {
           variant="ghost"
           full
           disabled={!supported || !s.voiceEnabled}
-          onClick={() => speak('Через 10 метров поверните налево')}
+          onClick={() => speak('Через 10 метров поверните налево', { force: true })}
         >
           🔊 Проверить голос
         </NeonButton>
